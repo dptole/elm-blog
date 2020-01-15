@@ -23,7 +23,7 @@ const public_paths = {
 module.exports = (helper, db, server, ql) =>
 util._extend(routes, {
   GET: {
-    '/': (req, res) => {
+    '/elm-blog/': (req, res) => {
       helper.request.log(req, res)
 
       res.header(
@@ -33,7 +33,7 @@ util._extend(routes, {
       )
     },
 
-    '/public/*': (req, res) => {
+    '/elm-blog/public/*': (req, res) => {
       helper.request.log(req, res)
 
       const url_path = helper.shouldBe.string(req.__params['*'])
@@ -45,15 +45,15 @@ util._extend(routes, {
       res.status(404).end('Not found')
     },
 
-    '/tmp': async (req, res) =>
+    '/elm-blog/tmp': async (req, res) =>
       res.json({
         replies: await db.comments.replies('16e6bb5f6aezh6ndza7dtk') // localhost
       }),
 
-    '/favicon.ico': async (req, res) =>
+    '/elm-blog/favicon.ico': async (req, res) =>
       res.end(),
 
-    '/me': async (req, res) =>
+    '/elm-blog/me': async (req, res) =>
       // @model me
       req.authenticate().then(async token => {
         try {
@@ -69,34 +69,34 @@ util._extend(routes, {
         }
       }),
 
-    '/me/avatar': (req, res) =>
+    '/elm-blog/me/avatar': (req, res) =>
       req.authenticate().then(async token =>
         res.json(
           await db.avatars.get(token.user_id)
         )
       ),
 
-    '/sign_out': async (req, res) => {
+    '/elm-blog/sign_out': async (req, res) => {
       // @model sign_out
       const auth_token = req.getCookie(req.cookies.auth_token)
       res.expireCookie(res.cookies.auth_token)
       res.status(200).json({success: auth_token !== null})
     },
 
-    '/tags': async (req, res) =>
+    '/elm-blog/tags': async (req, res) =>
       // @model tag[]
       res.json({
         tags: await db.posts.getAllTags()
       }),
 
-    '/me/comments/replies': (req, res) =>
+    '/elm-blog/me/comments/replies': (req, res) =>
       req.authenticate().then(async token =>
         res.json({
           replies: await db.comments.replies(token.user_id)
         }),
       ),
 
-    '/me/posts': (req, res) =>
+    '/elm-blog/me/posts': (req, res) =>
       // @model post[]
       req.authenticate().then(async token =>
         res.json({
@@ -112,14 +112,14 @@ util._extend(routes, {
         })
       ),
 
-    '/me/posts/review': (req, res) =>
+    '/elm-blog/me/posts/review': (req, res) =>
       req.authenticate().then(async token =>
         res.json({
           posts: await db.posts.getForReview(token.user_id)
         })
       ),
 
-    '/me/posts/review/:post_id': (req, res) =>
+    '/elm-blog/me/posts/review/:post_id': (req, res) =>
       req.authenticate().then(async token =>
         res.json(
           await db.posts.getOneForReview(
@@ -129,7 +129,7 @@ util._extend(routes, {
         )
       ),
 
-    '/me/post/:post_id': (req, res) =>
+    '/elm-blog/me/post/:post_id': (req, res) =>
       // @model post
       req.authenticate().then(async token =>
         res.json({
@@ -140,7 +140,7 @@ util._extend(routes, {
         })
       ),
 
-    '/post/comments/review': (req, res) =>
+    '/elm-blog/post/comments/review': (req, res) =>
       // @model comment[]
       req.authenticate().then(async token =>
         res.json(
@@ -148,7 +148,7 @@ util._extend(routes, {
         )
       ),
 
-    '/post/comments/review/:comment_id': (req, res) =>
+    '/elm-blog/post/comments/review/:comment_id': (req, res) =>
       // @model comment[]
       req.authenticate().then(async token =>
         res.json(
@@ -159,20 +159,20 @@ util._extend(routes, {
         )
       ),
 
-    '/post/comments/review/after/:comment_id': (req, res) =>
+    '/elm-blog/post/comments/review/after/:comment_id': (req, res) =>
       // @model comment[]
       req.authenticate().then(async token =>
         res.todo()
       ),
 
-    '/posts': async (req, res) =>
+    '/elm-blog/posts': async (req, res) =>
       // @model published_post[]
       res.json({
         posts: await db.posts.getAllPublished(),
         tags: await db.tags.getAll()
       }),
 
-    '/posts/tag/:tag_id': async (req, res) =>
+    '/elm-blog/posts/tag/:tag_id': async (req, res) =>
       // @model published_post[]
       res.json(
         await db.tags.getAllPosts(
@@ -180,13 +180,13 @@ util._extend(routes, {
         )
       ),
 
-    '/post/:post_id': async (req, res) =>
+    '/elm-blog/post/:post_id': async (req, res) =>
       // @model published_post
       res.json(
         await db.posts.getAsPublished(req.__params.post_id)
       ),
 
-    '/post/comments/replies/:comment_id': async (req, res) =>
+    '/elm-blog/post/comments/replies/:comment_id': async (req, res) =>
       // @model comment[]
       res.json(
         await db.comments.getReplies(
@@ -194,7 +194,7 @@ util._extend(routes, {
         )
       ),
 
-    '/post/comments/after/:comment_id': async (req, res) =>
+    '/elm-blog/post/comments/after/:comment_id': async (req, res) =>
       // @model comment[]
       res.json(
         await db.comments.getAfter(
@@ -202,7 +202,7 @@ util._extend(routes, {
         )
       ),
 
-    '/post/:post_id/comments/:page_index': async (req, res) =>
+    '/elm-blog/post/:post_id/comments/:page_index': async (req, res) =>
       // @model comment[]
       res.json(
         await db.comments.getPartial(
@@ -210,21 +210,21 @@ util._extend(routes, {
         )
       ),
 
-    '/avatar/:user_id': async (req, res) =>
+    '/elm-blog/avatar/:user_id': async (req, res) =>
       res.json(
         await db.avatars.get(
           (await req.decodeParams(req.paramsDecoders.getAvatar)).user_id
         )
       ),
 
-    '/me/graphs/post-stats': (req, res) =>
+    '/elm-blog/me/graphs/post-stats': (req, res) =>
       req.authenticate().then(async token =>
         res.json(
           await db.graphs.post_stats.get({author_id: token.user_id})
         )
       ),
 
-    '/graphs/post-stats/:author_id': async (req, res) =>
+    '/elm-blog/graphs/post-stats/:author_id': async (req, res) =>
       res.json(
         await db.graphs.post_stats.get(
           await req.decodeParams(
@@ -233,7 +233,7 @@ util._extend(routes, {
         )
       ),
 
-    '/graphs/post-stats/:post_id/:metric': async (req, res) =>
+    '/elm-blog/graphs/post-stats/:post_id/:metric': async (req, res) =>
       res.status(204).empty(
         await db.graphs.post_stats.hit(
           await req.decodeParams(
@@ -242,7 +242,7 @@ util._extend(routes, {
         )
       ),
 
-    '/*': (req, res) => {
+    '/elm-blog/*': (req, res) => {
       helper.request.log(req, res)
 
       res.header(
@@ -254,14 +254,14 @@ util._extend(routes, {
   },
 
   POST: {
-    '/sign_up': async (req, res) =>
+    '/elm-blog/sign_up': async (req, res) =>
       res.status(201).json(
         await db.users.signUp(
           await req.decodePayload(req.payloadDecoders.signUp)
         )
       ),
 
-    '/sign_in': async (req, res) => {
+    '/elm-blog/sign_in': async (req, res) => {
       // @model me
       let params = null
 
@@ -276,14 +276,14 @@ util._extend(routes, {
       res.setCookie(
         res.cookies.auth_token,
         token.id,
-        '/',
+        '/elm-blog/',
         new Date(token.expires)
       )
 
       res.status(201).json({user, token})
     },
 
-    '/post/draft': (req, res) =>
+    '/elm-blog/post/draft': (req, res) =>
       // @model post
       req.authenticate().then(async token =>
         res.status(201).json(
@@ -294,7 +294,7 @@ util._extend(routes, {
         )
       ),
 
-    '/post/commit': (req, res) =>
+    '/elm-blog/post/commit': (req, res) =>
       // @model post
       req.authenticate().then(async token =>
         res.json(
@@ -305,7 +305,7 @@ util._extend(routes, {
         )
       ),
 
-    '/post/comment/reply/:comment_id': (req, res) =>
+    '/elm-blog/post/comment/reply/:comment_id': (req, res) =>
       // @model comment
       req.authenticate().then(async token =>
         res.json(
@@ -317,7 +317,7 @@ util._extend(routes, {
         )
       ),
 
-    '/post/comment/review/reject/:comment_id': (req, res) =>
+    '/elm-blog/post/comment/review/reject/:comment_id': (req, res) =>
       // @model comment
       req.authenticate().then(async token =>
         res.json(
@@ -328,7 +328,7 @@ util._extend(routes, {
         )
       ),
 
-    '/post/comment/review/publish/:comment_id': (req, res) =>
+    '/elm-blog/post/comment/review/publish/:comment_id': (req, res) =>
       // @model comment
       req.authenticate().then(async token =>
         res.json(
@@ -339,7 +339,7 @@ util._extend(routes, {
         )
       ),
 
-    '/post/comment/:post_id/:page_index': (req, res) =>
+    '/elm-blog/post/comment/:post_id/:page_index': (req, res) =>
       // @model comment
       req.authenticate().then(async token =>
         res.json(
@@ -353,7 +353,7 @@ util._extend(routes, {
   },
 
   PUT: {
-    '/post/draft': (req, res) =>
+    '/elm-blog/post/draft': (req, res) =>
       // @model post
       req.authenticate().then(async token =>
         res.json(
@@ -364,7 +364,7 @@ util._extend(routes, {
         )
       ),
 
-    '/post/notes/:post_id': (req, res) =>
+    '/elm-blog/post/notes/:post_id': (req, res) =>
       // @model post
       req.authenticate().then(async token =>
         res.json(
@@ -382,7 +382,7 @@ util._extend(routes, {
         )
       ),
 
-    '/post/status/:post_id': (req, res) =>
+    '/elm-blog/post/status/:post_id': (req, res) =>
       // @model post
       req.authenticate().then(async token =>
         res.json(
@@ -400,7 +400,7 @@ util._extend(routes, {
         )
       ),
 
-    '/me/password': (req, res) =>
+    '/elm-blog/me/password': (req, res) =>
       req.authenticate().then(async token =>
         res.json(
           await db.users.updatePassword(
@@ -410,7 +410,7 @@ util._extend(routes, {
         )
       ),
 
-    '/me/avatar': (req, res) =>
+    '/elm-blog/me/avatar': (req, res) =>
       req.authenticate().then(async token =>
         res.json(
           await db.users.updateAvatar(
@@ -422,7 +422,7 @@ util._extend(routes, {
   },
 
   DELETE: {
-    '/post/:post_id': (req, res) =>
+    '/elm-blog/post/:post_id': (req, res) =>
       // @empty
       req.authenticate().then(async token => {
         await db.posts.delete(

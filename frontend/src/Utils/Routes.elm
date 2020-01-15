@@ -8,7 +8,7 @@ import Url
 
 
 root : String
-root = "/"
+root = "/elm-blog/"
 
 
 home : String
@@ -16,71 +16,71 @@ home = "/src/Main.elm"
 
 
 signUp : String
-signUp = "/sign_up"
+signUp = root ++ "sign_up"
 
 
 signIn : String
-signIn = "/sign_in"
+signIn = root ++ "sign_in"
 
 
 tags : String
-tags = "/tags"
+tags = root ++ "tags"
 
 
 tagDetails : String
-tagDetails = "/tag/:tag_id"
+tagDetails = root ++ "tag/:tag_id"
 
 
 readPost : String
-readPost = "/post/:post_id"
+readPost = root ++ "post/:post_id"
 
 
 dashboard : String
-dashboard = "/dashboard"
+dashboard = root ++ "dashboard"
 
 
 dashboardProfile : String
-dashboardProfile = "/dashboard/profile"
+dashboardProfile = root ++ "dashboard/profile"
 
 
 dashboardPost : String
-dashboardPost = "/dashboard/post"
+dashboardPost = root ++ "dashboard/post"
 
 
 dashboardPostReview : String
-dashboardPostReview = "/dashboard/post/review"
+dashboardPostReview = root ++ "dashboard/post/review"
 
 
 dashboardPostReviewDetails : String
-dashboardPostReviewDetails = "/dashboard/post/review/:post_id"
+dashboardPostReviewDetails = root ++ "dashboard/post/review/:post_id"
 
 
 dashboardPostCreate : String
-dashboardPostCreate = "/dashboard/post/create"
+dashboardPostCreate = root ++ "dashboard/post/create"
 
 
 dashboardPostShow : String
-dashboardPostShow = "/dashboard/post/show"
+dashboardPostShow = root ++ "dashboard/post/show"
 
 
 dashboardPostEdit : String
-dashboardPostEdit = "/dashboard/post/:post_id/edit"
+dashboardPostEdit = root ++ "dashboard/post/:post_id/edit"
 
 
 dashboardComment : String
-dashboardComment = "/dashboard/comment"
+dashboardComment = root ++ "dashboard/comment"
 
 
 dashboardCommentReply : String
-dashboardCommentReply = "/dashboard/comment/reply"
+dashboardCommentReply = root ++ "dashboard/comment/reply"
 
 
 dashboardCommentReview : String
-dashboardCommentReview = "/dashboard/comment/review"
+dashboardCommentReview = root ++ "dashboard/comment/review"
 
 
 dashboardCommentReviewDetails : String
-dashboardCommentReviewDetails = "/dashboard/comment/review/:comment_id"
+dashboardCommentReviewDetails = root ++ "dashboard/comment/review/:comment_id"
 
 
 routesMapping : List ( String, Utils.Types.Route )

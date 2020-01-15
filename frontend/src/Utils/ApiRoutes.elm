@@ -40,7 +40,7 @@ defaultHeaders =
 
 rootPath : String
 rootPath =
-  "http://localhost:9090"
+  "http://localhost:9090/elm-blog"
 
 
 postSignUp : RequestOptions
