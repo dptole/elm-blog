@@ -473,12 +473,12 @@ httpMetaDefault : Utils.Types.HttpMeta
 httpMetaDefault =
   Utils.Types.HttpMeta
     ( Utils.Types.HttpMetaHeaders -- headers
-        [] -- set_cookie
-        "" -- content_type
-        "" -- access_control_allow_origin
-        "" -- access_control_allow_credentials
+        []                        -- set_cookie
+        ""                        -- content_type
+        ""                        -- access_control_allow_origin
+        ""                        -- access_control_allow_credentials
     )
-    0 -- status_code
+    0                             -- status_code
 
 
 httpErrorDefault : List a
@@ -486,5 +486,45 @@ httpErrorDefault =
   [] -- errors
 
 
+
+-- BROWSER FLAGS DECODERS
+
+
+flags : Json.Decode.Value -> Utils.Types.MainModelFlags -> Utils.Types.MainModelFlags
+flags js_flags fallback =
+  Json.Decode.decodeValue Json.Decode.string js_flags
+    |> Result.andThen (Json.Decode.decodeString mainModelFlags)
+    |> Result.withDefault fallback
+
+
+mainModelFlags : Json.Decode.Decoder Utils.Types.MainModelFlags
+mainModelFlags =
+  Json.Decode.succeed Utils.Types.MainModelFlags
+    |> Json.Decode.Pipeline.required "url" mainModelFlagsUrl
+
+
+mainModelFlagsUrl : Json.Decode.Decoder Utils.Types.MainModelFlagsUrl
+mainModelFlagsUrl =
+  Json.Decode.succeed Utils.Types.MainModelFlagsUrl
+    |> Json.Decode.Pipeline.required "hash" Json.Decode.string
+    |> Json.Decode.Pipeline.required "host" Json.Decode.string
+    |> Json.Decode.Pipeline.required "hostname" Json.Decode.string
+    |> Json.Decode.Pipeline.required "href" Json.Decode.string
+    |> Json.Decode.Pipeline.required "origin" Json.Decode.string
+    |> Json.Decode.Pipeline.required "protocol" Json.Decode.string
+    |> Json.Decode.Pipeline.required "port_string" Json.Decode.string
+    |> Json.Decode.Pipeline.required "search_params" mainModelFlagsUrlSearchParams
+
+
+mainModelFlagsUrlSearchParams : Json.Decode.Decoder ( List Utils.Types.MainModelFlagsUrlSearchParam )
+mainModelFlagsUrlSearchParams =
+  Json.Decode.list mainModelFlagsUrlSearchParam
+
+
+mainModelFlagsUrlSearchParam : Json.Decode.Decoder Utils.Types.MainModelFlagsUrlSearchParam
+mainModelFlagsUrlSearchParam =
+  Json.Decode.succeed Utils.Types.MainModelFlagsUrlSearchParam
+    |> Json.Decode.Pipeline.required "key" Json.Decode.string
+    |> Json.Decode.Pipeline.required "value" Json.Decode.string
 
 

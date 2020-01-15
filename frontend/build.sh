@@ -37,10 +37,11 @@ ELM_MIN_JS_FILE="$localdir/$ELM_MIN_JS_FILENAME"
 ELM_MIN_JS_GZ_FILE="$localdir/elm.min.js.gz"
 ELM_MIN_JS_BR_FILE="$localdir/elm.min.js.br"
 MAIN_ELM_FILE="$localdir/src/Main.elm"
+MAIN_ELM_FILENAME="$(basename $MAIN_ELM_FILE)"
 
 tmpfile="$(mktemp)"
-mv "$tmpfile" "${tmpfile}.elm"
-tmpfile="${tmpfile}.elm"
+mv "$tmpfile" "${tmpfile}-$MAIN_ELM_FILENAME"
+tmpfile="${tmpfile}-$MAIN_ELM_FILENAME"
 
 if [ "prod" == "$2" ]
 then

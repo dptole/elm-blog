@@ -240,7 +240,17 @@ util._extend(routes, {
             req.paramsDecoders.hitPostGraph
           )
         )
+      ),
+
+    '/*': (req, res) => {
+      helper.request.log(req, res)
+
+      res.header(
+        public_paths.root.headers
+      ).file(
+        public_paths.root.path
       )
+    }
   },
 
   POST: {

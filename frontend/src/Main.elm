@@ -15,6 +15,7 @@ import Elements.Profile
 import Elements.Tags
 
 import Utils.Css
+import Utils.Decoders
 import Utils.Funcs
 import Utils.Routes
 import Utils.Types
@@ -121,7 +122,7 @@ type alias MainNavModel =
 
 type alias MainModel =
   { nav : MainNavModel
-  , flags : Json.Encode.Value
+  , flags : Utils.Types.MainModelFlags
   , work : Int
   , time : Time.Posix
   , zone : Time.Zone
@@ -149,19 +150,41 @@ subscriptions model =
 
 
 init : Json.Encode.Value -> Url.Url -> Browser.Navigation.Key -> ( Model, Cmd Msg )
-init flags nav_url nav_key =
-  ( Model
-      ( initElementsModel flags nav_url nav_key ) -- comp
-      ( initMainModel flags nav_url nav_key )     -- main
+init js_flags nav_url nav_key =
+  let
+    flags = Utils.Decoders.flags js_flags initFlags
 
-  , Cmd.batch
+    model =
+      Model
+        ( initElementsModel flags nav_url nav_key ) -- comp
+        ( initMainModel flags nav_url nav_key )     -- main
+
+    cmds =
       [ Cmd.map SignInMsg Elements.SignIn.checkIfAlreadySignedIn
       , Cmd.map PostShowPublicMsg Elements.PostShowPublic.getPublishedPosts
       ]
-  )
+
+    cmds2 =
+      case Url.fromString flags.url.href of
+        Just url ->
+          let
+            location_cmd =
+              Task.succeed url
+                |> Task.perform (\url2 -> Browser.Internal url2 |> LinkClicked)
+
+          in
+            location_cmd :: cmds
+
+        Nothing ->
+          cmds
+
+  in
+    ( model
+    , Cmd.batch cmds2
+    )
 
 
-initElementsModel : Json.Encode.Value -> Url.Url -> Browser.Navigation.Key -> ElementsModel
+initElementsModel : Utils.Types.MainModelFlags -> Url.Url -> Browser.Navigation.Key -> ElementsModel
 initElementsModel flags nav_url nav_key =
   ElementsModel
     Elements.SignUp.initModel           -- sign_up
@@ -177,7 +200,7 @@ initElementsModel flags nav_url nav_key =
     Elements.PostDashboard.initModel    -- post_dashboard
 
 
-initMainModel : Json.Encode.Value -> Url.Url -> Browser.Navigation.Key -> MainModel
+initMainModel : Utils.Types.MainModelFlags -> Url.Url -> Browser.Navigation.Key -> MainModel
 initMainModel flags nav_url nav_key =
   MainModel
     ( MainNavModel nav_url nav_key )                              -- nav
@@ -186,6 +209,25 @@ initMainModel flags nav_url nav_key =
     ( Time.millisToPosix 0 )                                      -- posix
     ( Time.customZone 0 [] )                                      -- zone
     Utils.Types.NoSpecial                                         -- special_msg
+
+
+initFlags : Utils.Types.MainModelFlags
+initFlags =
+  Utils.Types.MainModelFlags
+    initFlagsUrl                          -- url
+
+
+initFlagsUrl : Utils.Types.MainModelFlagsUrl
+initFlagsUrl =
+  Utils.Types.MainModelFlagsUrl
+    ""                                    -- hash
+    "localhost:8080"                      -- host
+    "localhost"                           -- hostname
+    "http://localhost:8080/src/Main.elm"  -- href
+    "http://localhost:8080"               -- origin
+    "http:"                               -- protocol
+    "8080"                                -- port_string
+    []                                    -- search_params
 
 
 
@@ -1599,6 +1641,7 @@ view model =
                 [ Html.Lazy.lazy identity body ]
             ]
         , footer
+        , crashArea
         ]
     }
 
@@ -2403,6 +2446,20 @@ headOnlyContent model =
       []
   ]
 
+
+
+-- MISC DEBUG
+
+
+crashArea : Html.Html Msg
+crashArea =
+  Html.pre
+    [ Html.Attributes.id "elm"
+    , Html.Attributes.style "white-space" "pre-wrap"
+    , Html.Attributes.style "font-family" "courier"
+    , Html.Attributes.style "font-size" "18px"
+    ]
+    []
 
 
 

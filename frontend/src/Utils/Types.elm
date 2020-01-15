@@ -333,4 +333,27 @@ type alias HttpMeta =
   }
 
 
+type alias MainModelFlags =
+  { url : MainModelFlagsUrl
+  }
+
+
+type alias MainModelFlagsUrl =
+  { hash : String
+  , host : String
+  , hostname : String
+  , href : String
+  , origin : String
+  , protocol : String
+  , port_string : String
+  , search_params : List MainModelFlagsUrlSearchParam
+  }
+
+
+type alias MainModelFlagsUrlSearchParam =
+  { key : String
+  , value : String
+  }
+
+
 
