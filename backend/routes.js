@@ -45,11 +45,6 @@ util._extend(routes, {
       res.status(404).end('Not found')
     },
 
-    '/elm-blog/tmp': async (req, res) =>
-      res.json({
-        replies: await db.comments.replies('16e6bb5f6aezh6ndza7dtk') // localhost
-      }),
-
     '/elm-blog/favicon.ico': async (req, res) =>
       res.end(),
 

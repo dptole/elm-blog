@@ -395,7 +395,7 @@ util._extend(helper, {
             (res.gzip.setup(), res)
           )
 
-        return filestream
+        return filestream.pipe(res)
       }
 
       res.empty = () => {
