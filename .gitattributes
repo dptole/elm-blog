@@ -1,0 +1,6 @@
+*.elm linguist-language=Elm
+*.js linguist-language=JavaScript
+*.html linguist-language=HTML
+*.sh linguist-language=Shell
+*.md linguist-detectable=false
+*.json linguist-detectable=false

@@ -1,0 +1,8 @@
+tar.sh
+*.sw*
+frontend/elm-stuff/**
+frontend/elm.js
+frontend/elm.min.js
+frontend/index.html
+backend/db/**
+backend/public/js/elm.min.js
