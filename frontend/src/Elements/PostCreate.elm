@@ -1108,7 +1108,7 @@ maxPageContentLength kind =
 
 
 textareaHeight : Int
-textareaHeight = 300
+textareaHeight = 250
 
 
 

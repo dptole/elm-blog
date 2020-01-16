@@ -66,6 +66,10 @@ hr {
   margin: 20px 0;
 }
 
+h1 {
+  font-size: 2em;
+}
+
 table tbody {
   word-break: break-all;
 }
@@ -425,6 +429,10 @@ table.postcomments td.postcomments-message
   box-shadow: 0 0 10px;
   width: 400px;
   height: 300px;
+}
+
+table.publishedpost td.publishedpost-page {
+  word-break: break-word;
 }
 
 svg.postcomments-message {
