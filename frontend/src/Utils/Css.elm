@@ -400,7 +400,7 @@ div.publishedpost-page-container {
 }
 
 img.publishedpost-page-image {
-  max-height: 190px;
+  max-height: 290px;
   max-width: 298px;
   animation: imgshow 2s;
 }

@@ -1,6 +1,6 @@
 # Elm blog
 
-A mini blog made using only [Elm 0.19.1][elm_0_19_1].
+A mini blog made using only [Elm 0.19.1][elm_0_19_1]!
 
 Check out the demo at [dptole.ngrok.io/elm-blog/][demo].
 
@@ -18,7 +18,7 @@ Css        | 0             | All the CSS comes from Elm and update according to 
 
 # Blog
 
-The blog uses Elm for the frontend and Nodejs, with no dependencies, for the backend. In order to easily recreate the blog locally you can use the docker installer [here][docker_installer] and a local server will be available at http://localhost:9090 (prod) and http://localhost:8080 (dev).
+The blog uses Elm for the frontend and Nodejs, with no dependencies, for the backend. In order to easily recreate the blog locally you can use the docker installer [here][docker_installer] and a local server will be available at http://localhost:9090/elm-blog/ (prod) and http://localhost:8080/elm-blog/ (dev).
 
 
 [elm_0_19_1]: https://github.com/elm/compiler/blob/24d3a89469e75cf7aa579442ecaf5ddfdd192ab2/installers/linux/README.md

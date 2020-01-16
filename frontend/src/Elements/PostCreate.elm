@@ -474,6 +474,7 @@ update msg model =
             | work = Utils.Work.addWork savingPost model.work
             , error_response = "Saving the post..."
             , http_cmds = Dict.insert "SavingAsPost" http_cmd model.http_cmds
+            , dict_errors = Utils.Funcs.emptyDict
             }
           , http_cmd
           )
@@ -569,6 +570,7 @@ update msg model =
             | work = Utils.Work.addWork committingDraft model.work
             , error_response = "Saving post..."
             , http_cmds = Dict.insert "CommitPost" http_cmd model.http_cmds
+            , dict_errors = Utils.Funcs.emptyDict
             }
           , http_cmd
           )
