@@ -150,13 +150,19 @@ div.footer
   padding: 10px;
 }
 
+div.footer a {
+  color: black;
+}
+
 div.header > ul > li * {
   color: var(--header-color) !important;
   cursor: pointer;
 }
 
 div.header > ul > li a:hover,
-div.header > ul > li a:focus
+div.header > ul > li a:focus,
+div.footer a:hover,
+div.footer a:focus
 {
   text-decoration: underline;
 }

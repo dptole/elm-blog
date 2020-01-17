@@ -1858,61 +1858,32 @@ viewPageHeader model =
 
 viewPageFooter : Model -> Html.Html Msg
 viewPageFooter model =
-  let
-    year =
-      Time.toYear model.main.zone model.main.time
-        |> String.fromInt
+  Html.div
+    [ Html.Attributes.class "footer" ]
+    [ Html.text "Made with "
 
-    init_year =
-      Time.millisToPosix 0
-        |> Time.toYear model.main.zone
-        |> String.fromInt
+    , Html.a
+        [ Html.Attributes.href "https://elm-lang.org"
+        , Html.Attributes.target "_blank"
+        ]
+        [ Html.text "Elm" ]
 
-    modal_html =
-      case model.main.special_msg of
-        Utils.Types.NoSpecial ->
-          Html.div [] []
+    , Html.text " by "
 
-        Utils.Types.ReSignIn ->
-          Html.div
-            [ Html.Attributes.class "modal-container" ]
-            [ Html.div
-                [ Html.Attributes.class "modal-container-box" ]
-                [ Html.div
-                    [ Html.Attributes.class "modal-container-close"
-                    , Html.Events.onClick
-                        <| SignInMsg
-                        <| Elements.SignIn.GotSubmitSignOutResponse
-                        <| Ok { success = True }
-                    ]
-                    [ Html.text "x" ]
+    , Html.a
+        [ Html.Attributes.href "https://github.com/dptole"
+        , Html.Attributes.target "_blank"
+        ]
+        [ Html.text "dptole" ]
 
-                , Html.small
-                    []
-                    [ Html.text "Your session has expired!" ]
+    , Html.text " · "
 
-                , Elements.SignIn.view model.comp.sign_in
-                    |> Html.map SignInMsg
-                ]
-            ]
-
-  in
-    Html.div
-      [ Html.Attributes.class "footer" ]
-      ( modal_html ::
-        (
-          if year == init_year then
-            [ Html.span
-                [ Html.Attributes.class "loadingdotsafter" ]
-                [ Html.text "Copyright © " ]
-            ]
-          else
-            [ Html.span
-                []
-                [ Html.text ( "Copyright © " ++ year ) ]
-            ]
-        )
-      )
+    , Html.a
+        [ Html.Attributes.href "https://github.com/dptole/elm-blog"
+        , Html.Attributes.target "_blank"
+        ]
+        [ Html.text "github repo" ]
+    ]
 
 
 viewPublishedPosts : Model -> List ( Html.Html Msg )

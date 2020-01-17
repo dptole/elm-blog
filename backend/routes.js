@@ -23,6 +23,27 @@ const public_paths = {
 module.exports = (helper, db, server, ql) =>
 util._extend(routes, {
   GET: {
+    '/': (req, res) => {
+      const methods = 'GET POST PUT DELETE'.split(' ')
+      const all_routes = {}
+
+      for(const method of methods) {
+        all_routes[method] = []
+
+        for(const path in routes[method]) {
+          if(path[0] === '/')
+            all_routes[method].push(path)
+        }
+      }
+
+      for(const method of methods)
+        all_routes[method].sort()
+
+      res.json({
+        routes: all_routes
+      })
+    },
+
     '/elm-blog/': (req, res) => {
       helper.request.log(req, res)
 
@@ -44,9 +65,6 @@ util._extend(routes, {
 
       res.status(404).end('Not found')
     },
-
-    '/elm-blog/favicon.ico': async (req, res) =>
-      res.end(),
 
     '/elm-blog/me': async (req, res) =>
       // @model me
