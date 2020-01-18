@@ -46,11 +46,12 @@ type alias Model =
         }
   , replying_message : String
   , http_cmds : Dict.Dict String ( Cmd Msg )
+  , flags : Utils.Types.MainModelFlags
   }
 
 
-initModel : Model
-initModel =
+initModel : Utils.Types.MainModelFlags -> Model
+initModel flags =
   Model
     []                    -- replies
     Utils.Work.notWorking -- work
@@ -58,6 +59,7 @@ initModel =
     Nothing               -- replying_to
     ""                    -- replying_message
     Utils.Funcs.emptyDict -- http_cmds
+    flags                 -- flags
 
 
 
@@ -75,6 +77,7 @@ update msg model =
       let
         http_cmd =
           Utils.Api.getCommentsReplies
+            model.flags.api
             GotFetchRepliesResponse
             Utils.Decoders.commentReplies
 
@@ -135,6 +138,7 @@ update msg model =
           let
             http_cmd =
               Utils.Api.justReplyComment
+                model.flags.api
                 comment.id
                 ( Utils.Encoders.replyComment model.replying_message )
                 GotSubmitReplyCommentResponse
@@ -153,7 +157,7 @@ update msg model =
     GotSubmitReplyCommentResponse _ ->
       update
         FetchReplies
-        initModel
+        ( initModel model.flags )
 
 
 

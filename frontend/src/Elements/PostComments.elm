@@ -79,6 +79,7 @@ type alias Model =
   , avatar : Maybe ( List Utils.Types.AvatarDrawingCmd )
   , http_cmds : Dict.Dict String ( Cmd Msg )
   , date_time : String
+  , flags : Utils.Types.MainModelFlags
   }
 
 
@@ -86,12 +87,12 @@ type alias Model =
 -- INIT
 
 
-initModel : Model
-initModel =
+initModel : Utils.Types.MainModelFlags -> Model
+initModel flags =
   Model
     Utils.Types.CommentsForPostNotReady -- comments
     ""                                  -- new_comment
-    Svg.Comments.initModel              -- svg_comments
+    ( Svg.Comments.initModel flags )    -- svg_comments
     ""                                  -- post_id
     0                                   -- page_index
     Utils.Work.notWorking               -- work
@@ -100,16 +101,18 @@ initModel =
     Nothing                             -- avatar
     Utils.Funcs.emptyDict               -- http_cmds
     ""                                  -- date_time
+    flags                               -- flags
 
 
-initModelToCommentReview : List Utils.Types.PostComment -> Model
-initModelToCommentReview post_comments =
+initModelToCommentReview : Utils.Types.MainModelFlags -> List Utils.Types.PostComment -> Model
+initModelToCommentReview flags post_comments =
   Model
     ( Utils.Types.CommentsForPostLoaded
         post_comments
     )                                       -- comments
     ""                                      -- new_comment
     ( Svg.Comments.initModelToCommentReview
+        flags
         post_comments
     )                                       -- svg_comments
     ""                                      -- post_id
@@ -120,23 +123,19 @@ initModelToCommentReview post_comments =
     Nothing                                 -- avatar
     Utils.Funcs.emptyDict                   -- http_cmds
     ""                                      -- date_time
+    flags                                   -- flags
 
 
 initModelFromPostIdPageIndex : String -> Int -> Model -> Model
 initModelFromPostIdPageIndex post_id page_index model =
   let
-    model2 = initModel
+    model2 = initModel model.flags
   in
     { model2
     | post_id = post_id
     , page_index = page_index
     , is_logged_in = model.is_logged_in
     }
-
-
-init : ( Model, Cmd Msg )
-init =
-  ( initModel, Cmd.none )
 
 
 
@@ -158,6 +157,7 @@ update msg model =
               model.page_index
         }
       , Utils.Api.getPostComment
+          model.flags.api
           model.post_id
           model.page_index
           GotLoadCommentsResponse
@@ -170,7 +170,7 @@ update msg model =
           ( { model
             | comments = Utils.Types.CommentsForPostLoaded post_comments
             , svg_comments =
-                Svg.Comments.initModelFromPostComment post_comments
+                Svg.Comments.initModelFromPostComment model.flags post_comments
             }
           , Cmd.none
           )
@@ -204,6 +204,7 @@ update msg model =
       let
         http_cmd =
           Utils.Api.createComment
+            model.flags.api
             model.post_id
             model.page_index
             ( Utils.Encoders.createComment model.new_comment )
@@ -263,6 +264,7 @@ update msg model =
           let
             http_cmd =
               Utils.Api.replyComment
+                model.flags.api
                 focused_comment.id
                 ( Utils.Encoders.replyComment model.reply_comment )
                 GotSubmitReplyComment
@@ -303,6 +305,7 @@ update msg model =
             , avatar = Nothing
             }
           , Utils.Api.getAvatar
+              model.flags.api
               focused_comment.author.id
               GotShowAvatarResponse
               Utils.Decoders.userAvatar
@@ -677,7 +680,7 @@ createFullCommentsBlock model =
                 case model.avatar of
                   Just drawing_cmds ->
                     let
-                      profile_model = Elements.Profile.initModel
+                      profile_model = Elements.Profile.initModel model.flags
                     in
                       [ Elements.Profile.viewWebGlAvatarProfile
                           { profile_model

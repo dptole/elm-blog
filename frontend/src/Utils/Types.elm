@@ -227,6 +227,7 @@ type alias SvgCommentsModel =
   , confs : SvgCommentsConfs
   , orientation : SvgCommentsOrientation
   , last_move : ( Int, Int )
+  , flags : MainModelFlags
   }
 
 
@@ -335,6 +336,7 @@ type alias HttpMeta =
 
 type alias MainModelFlags =
   { url : MainModelFlagsUrl
+  , api : String
   }
 
 

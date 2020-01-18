@@ -39,6 +39,7 @@ type alias Model =
   , auth : Maybe Utils.Types.Auth
   , error_response : Maybe ( List String )
   , lock_username : Bool
+  , flags : Utils.Types.MainModelFlags
   }
 
 
@@ -46,8 +47,8 @@ type alias Model =
 -- INIT
 
 
-initModel : Model
-initModel =
+initModel : Utils.Types.MainModelFlags -> Model
+initModel flags =
   Model
     ""                  -- username
     ""                  -- passwork
@@ -55,6 +56,7 @@ initModel =
     Nothing             -- auth
     Nothing             -- error_response
     False               -- lock_username
+    flags               -- flags
 
 
 
@@ -81,6 +83,7 @@ update msg model =
     SubmitSignOut ->
       ( model
       , Utils.Api.signOut
+          model.flags.api
           GotSubmitSignOutResponse
           Utils.Decoders.signOutResponse
       )
@@ -100,6 +103,7 @@ update msg model =
           , error_response = Nothing
           }
         , Utils.Api.signIn
+            model.flags.api
             ( Utils.Encoders.signInRequest model.username model.password )
             GotSignInResponse
             Utils.Decoders.auth_
@@ -309,9 +313,10 @@ submittingCredentials = 2
 -- MISC HTTP
 
 
-checkIfAlreadySignedIn : Cmd Msg
-checkIfAlreadySignedIn =
+checkIfAlreadySignedIn : Utils.Types.MainModelFlags -> Cmd Msg
+checkIfAlreadySignedIn flags =
   Utils.Api.getMe
+    flags.api
     GotCheckIfAlreadySignedInResponse
     Utils.Decoders.auth
 

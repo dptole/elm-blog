@@ -35,6 +35,7 @@ type alias Model =
   , password : String
   , work : Int
   , error_response : Maybe ( List String )
+  , flags : Utils.Types.MainModelFlags
   }
 
 
@@ -42,18 +43,14 @@ type alias Model =
 -- INIT
 
 
-initModel : Model
-initModel =
+initModel : Utils.Types.MainModelFlags -> Model
+initModel flags =
   Model
     ""                    -- username
     ""                    -- password
     Utils.Work.notWorking -- work
     Nothing               -- error_response
-
-
-init : ( Model, Cmd Msg )
-init =
-  ( initModel, Cmd.none )
+    flags                 -- flags
 
 
 
@@ -86,6 +83,7 @@ update msg model =
           | work = Utils.Work.addWork creatingAccount model.work
           }
         , Utils.Api.createAccount
+            model.flags.api
             ( Utils.Encoders.signUpRequest model.username model.password )
             GotSignUpResponse
             Utils.Decoders.createAccount_

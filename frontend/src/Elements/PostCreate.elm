@@ -72,6 +72,7 @@ type alias Model =
   , pagination_scroll : Int
   , dict_errors : Dict.Dict String String
   , http_cmds : Dict.Dict String ( Cmd Msg )
+  , flags : Utils.Types.MainModelFlags
   }
 
 
@@ -95,8 +96,8 @@ initPage : TextareaPage
 initPage = TextareaPage Utils.Types.PageKindText "" textareaHeight
 
 
-initModelFromPost : Utils.Types.Post -> Model
-initModelFromPost post =
+initModelFromPost : Utils.Types.MainModelFlags -> Utils.Types.Post -> Model
+initModelFromPost flags post =
   Model
     post.title                                -- title
     ( fromPagesToTextareaPages post.pages )   -- pages
@@ -112,10 +113,11 @@ initModelFromPost post =
     0                                         -- pagination_scroll
     Utils.Funcs.emptyDict                     -- dict_errors
     Utils.Funcs.emptyDict                     -- http_cmds
+    flags                                     -- flags
 
 
-initModelFetchingPostById : String -> Model
-initModelFetchingPostById post_id =
+initModelFetchingPostById : Utils.Types.MainModelFlags -> String -> Model
+initModelFetchingPostById flags post_id =
   Model
     ""                    -- title
     [ initPage ]          -- pages
@@ -131,10 +133,11 @@ initModelFetchingPostById post_id =
     0                     -- pagination_scroll
     Utils.Funcs.emptyDict -- dict_errors
     Utils.Funcs.emptyDict -- http_cmds
+    flags                 -- flags
 
 
-initModel : Model
-initModel =
+initModel : Utils.Types.MainModelFlags -> Model
+initModel flags =
   Model
     ""                    -- title
     [ initPage ]          -- pages
@@ -150,6 +153,7 @@ initModel =
     0                     -- pagination_scroll
     Utils.Funcs.emptyDict -- dict_errors
     Utils.Funcs.emptyDict -- http_cmds
+    flags                 -- flags
 
 
 
@@ -371,6 +375,7 @@ update msg model =
         let
           http_cmd =
             Utils.Api.upsertPostRequest
+              model.flags.api
               model.post_id
               ( Utils.Encoders.upsertPostRequest
                   model.post_id
@@ -460,6 +465,7 @@ update msg model =
         let
           http_cmd =
             Utils.Api.commitPostRequest
+              model.flags.api
               ( Utils.Encoders.upsertPostRequest
                   model.post_id
                   model.title
@@ -556,6 +562,7 @@ update msg model =
         let
           http_cmd =
             Utils.Api.commitPostRequest
+              model.flags.api
               ( Utils.Encoders.upsertPostRequest
                   model.post_id
                   model.title
@@ -595,11 +602,14 @@ update msg model =
               )
 
             else
-              ( { initModel
-                | error_response = "Post created successfully."
-                }
-              , Cmd.none
-              )
+              let
+                model3 = initModel model2.flags
+              in
+                ( { model3
+                  | error_response = "Post created successfully."
+                  }
+                , Cmd.none
+                )
 
           Err _ ->
             ( { model2
@@ -614,6 +624,7 @@ update msg model =
         | work = Utils.Work.addWork fetchingPost model.work
         }
       , Utils.Api.getMyPost
+          model.flags.api
           post_id
           GotFetchPostResponse
           Utils.Decoders.privatePostResponse

@@ -45,10 +45,16 @@
         return url_object;
       }
 
+      function getApi() {
+        var API_URL = "http://localhost:9090/elm-blog";
+        return API_URL;
+      }
+
       Elm.Main.init({
         node: elm,
         flags: JSON.stringify({
-          url: getUrl()
+          url: getUrl(),
+          api: getApi()
         })
       })
     }()

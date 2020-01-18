@@ -13,11 +13,11 @@ type alias RequestOptions =
   }
 
 
-route : String -> String -> Maybe Float -> Maybe String -> List Http.Header -> RequestOptions
-route method path timeout tracker headers =
+route : String -> String -> String -> Maybe Float -> Maybe String -> List Http.Header -> RequestOptions
+route root_path method path timeout tracker headers =
   RequestOptions
     method
-    ( String.append rootPath path )
+    ( String.append root_path path )
     timeout
     tracker
     headers
@@ -38,29 +38,105 @@ defaultHeaders =
   []
 
 
-rootPath : String
-rootPath =
-  "http://localhost:9090/elm-blog"
+type alias ApiRoutes =
+  { postSignUp : RequestOptions
+  , postSignIn : RequestOptions
+  , postDraft : RequestOptions
+  , deletePost : String -> RequestOptions
+  , addPostNotes : String -> RequestOptions
+  , updatePostStatus : String -> RequestOptions
+  , getPublishedPosts : RequestOptions
+  , getPublishedPost : String -> RequestOptions
+  , commitDraft : RequestOptions
+  , putDraft : RequestOptions
+  , updatePassword : RequestOptions
+  , updateAvatar : RequestOptions
+  , getMyAvatar : RequestOptions
+  , getMyPostsStatsGraph : RequestOptions
+  , hitPostStats : String -> RequestOptions
+  , getAvatar : String -> RequestOptions
+  , getMe : RequestOptions
+  , getSignOut : RequestOptions
+  , getMePosts : RequestOptions
+  , getPostsToReview : RequestOptions
+  , getPostToReview : String -> RequestOptions
+  , getMePost : String -> RequestOptions
+  , getCommentsReplies : RequestOptions
+  , getPostComment : String -> Int -> RequestOptions
+  , getCommentReplies : String -> RequestOptions
+  , getCommentsAfter : String -> RequestOptions
+  , getCommentsReviews : RequestOptions
+  , getCommentsReviewDetails : String -> RequestOptions
+  , publishComment : String -> RequestOptions
+  , rejectComment : String -> RequestOptions
+  , createComment : String -> Int -> RequestOptions
+  , replyComment : String -> RequestOptions
+  , getTags : RequestOptions
+  , taggedPosts : String -> RequestOptions
+  }
 
 
-postSignUp : RequestOptions
-postSignUp =
-  route "POST" "/sign_up" defaultTimeout defaultTracker defaultHeaders
+create : String -> ApiRoutes
+create root_path =
+  ApiRoutes
+    ( postSignUp root_path )
+    ( postSignIn root_path )
+    ( postDraft root_path )
+    ( deletePost root_path )
+    ( addPostNotes root_path )
+    ( updatePostStatus root_path )
+    ( getPublishedPosts root_path )
+    ( getPublishedPost root_path )
+    ( commitDraft root_path )
+    ( putDraft root_path )
+    ( updatePassword root_path )
+    ( updateAvatar root_path )
+    ( getMyAvatar root_path )
+    ( getMyPostsStatsGraph root_path )
+    ( hitPostStats root_path )
+    ( getAvatar root_path )
+    ( getMe root_path )
+    ( getSignOut root_path )
+    ( getMePosts root_path )
+    ( getPostsToReview root_path )
+    ( getPostToReview root_path )
+    ( getMePost root_path )
+    ( getCommentsReplies root_path )
+    ( getPostComment root_path )
+    ( getCommentReplies root_path )
+    ( getCommentsAfter root_path )
+    ( getCommentsReviews root_path )
+    ( getCommentsReviewDetails root_path )
+    ( publishComment root_path )
+    ( rejectComment root_path )
+    ( createComment root_path )
+    ( replyComment root_path )
+    ( getTags root_path )
+    ( taggedPosts root_path )
 
 
-postSignIn : RequestOptions
-postSignIn =
-  route "POST" "/sign_in" defaultTimeout defaultTracker defaultHeaders
+
+-- ROUTES
 
 
-postDraft : RequestOptions
-postDraft =
-  route "POST" "/post/draft" defaultTimeout defaultTracker defaultHeaders
+postSignUp : String -> RequestOptions
+postSignUp root_path =
+  route root_path "POST" "/sign_up" defaultTimeout defaultTracker defaultHeaders
 
 
-deletePost : String -> RequestOptions
-deletePost post_id =
-  route
+postSignIn : String -> RequestOptions
+postSignIn root_path =
+  route root_path "POST" "/sign_in" defaultTimeout defaultTracker defaultHeaders
+
+
+postDraft : String -> RequestOptions
+postDraft root_path =
+  route root_path "POST" "/post/draft" defaultTimeout defaultTracker defaultHeaders
+
+
+deletePost : String -> String -> RequestOptions
+deletePost root_path post_id =
+  route root_path
     "DELETE"
     ( "/post/" ++ post_id )
     defaultTimeout
@@ -68,9 +144,9 @@ deletePost post_id =
     defaultHeaders
 
 
-addPostNotes : String -> RequestOptions
-addPostNotes post_id =
-  route
+addPostNotes : String -> String -> RequestOptions
+addPostNotes root_path post_id =
+  route root_path
     "PUT"
     ( "/post/notes/" ++ post_id )
     defaultTimeout
@@ -78,9 +154,9 @@ addPostNotes post_id =
     defaultHeaders
 
 
-updatePostStatus : String -> RequestOptions
-updatePostStatus post_id =
-  route
+updatePostStatus : String -> String -> RequestOptions
+updatePostStatus root_path post_id =
+  route root_path
     "PUT"
     ( "/post/status/" ++ post_id )
     defaultTimeout
@@ -88,14 +164,14 @@ updatePostStatus post_id =
     defaultHeaders
 
 
-getPublishedPosts : RequestOptions
-getPublishedPosts =
-  route "GET" "/posts" defaultTimeout defaultTracker defaultHeaders
+getPublishedPosts : String -> RequestOptions
+getPublishedPosts root_path =
+  route root_path "GET" "/posts" defaultTimeout defaultTracker defaultHeaders
 
 
-getPublishedPost : String -> RequestOptions
-getPublishedPost post_id  =
-  route
+getPublishedPost : String -> String -> RequestOptions
+getPublishedPost root_path post_id  =
+  route root_path
     "GET"
     ( "/post/" ++ post_id )
     defaultTimeout
@@ -103,39 +179,39 @@ getPublishedPost post_id  =
     defaultHeaders
 
 
-commitDraft : RequestOptions
-commitDraft =
-  route "POST" "/post/commit" defaultTimeout defaultTracker defaultHeaders
+commitDraft : String -> RequestOptions
+commitDraft root_path =
+  route root_path "POST" "/post/commit" defaultTimeout defaultTracker defaultHeaders
 
 
-putDraft : RequestOptions
-putDraft =
-  route "PUT" "/post/draft" defaultTimeout defaultTracker defaultHeaders
+putDraft : String -> RequestOptions
+putDraft root_path =
+  route root_path "PUT" "/post/draft" defaultTimeout defaultTracker defaultHeaders
 
 
-updatePassword : RequestOptions
-updatePassword =
-  route "PUT" "/me/password" defaultTimeout defaultTracker defaultHeaders
+updatePassword : String -> RequestOptions
+updatePassword root_path =
+  route root_path "PUT" "/me/password" defaultTimeout defaultTracker defaultHeaders
 
 
-updateAvatar : RequestOptions
-updateAvatar =
-  route "PUT" "/me/avatar" defaultTimeout defaultTracker defaultHeaders
+updateAvatar : String -> RequestOptions
+updateAvatar root_path =
+  route root_path "PUT" "/me/avatar" defaultTimeout defaultTracker defaultHeaders
 
 
-getMyAvatar : RequestOptions
-getMyAvatar =
-  route "GET" "/me/avatar" defaultTimeout defaultTracker defaultHeaders
+getMyAvatar : String -> RequestOptions
+getMyAvatar root_path =
+  route root_path "GET" "/me/avatar" defaultTimeout defaultTracker defaultHeaders
 
 
-getMyPostsStatsGraph : RequestOptions
-getMyPostsStatsGraph =
-  route "GET" "/me/graphs/post-stats" defaultTimeout defaultTracker defaultHeaders
+getMyPostsStatsGraph : String -> RequestOptions
+getMyPostsStatsGraph root_path =
+  route root_path "GET" "/me/graphs/post-stats" defaultTimeout defaultTracker defaultHeaders
 
 
-hitPostStats : String -> RequestOptions
-hitPostStats post_id =
-  route
+hitPostStats : String -> String -> RequestOptions
+hitPostStats root_path post_id =
+  route root_path
     "GET"
     ( "/graphs/post-stats/" ++ post_id ++ "/hit" )
     defaultTimeout
@@ -143,9 +219,9 @@ hitPostStats post_id =
     defaultHeaders
 
 
-getAvatar : String -> RequestOptions
-getAvatar user_id =
-  route
+getAvatar : String -> String -> RequestOptions
+getAvatar root_path user_id =
+  route root_path
     "GET"
     ( "/avatar/" ++ user_id )
     defaultTimeout
@@ -153,24 +229,24 @@ getAvatar user_id =
     defaultHeaders
 
 
-getMe : RequestOptions
-getMe =
-  route "GET" "/me" defaultTimeout defaultTracker defaultHeaders
+getMe : String -> RequestOptions
+getMe root_path =
+  route root_path "GET" "/me" defaultTimeout defaultTracker defaultHeaders
 
 
-getSignOut : RequestOptions
-getSignOut =
-  route "GET" "/sign_out" defaultTimeout defaultTracker defaultHeaders
+getSignOut : String -> RequestOptions
+getSignOut root_path =
+  route root_path "GET" "/sign_out" defaultTimeout defaultTracker defaultHeaders
 
 
-getMePosts : RequestOptions
-getMePosts =
-  route "GET" "/me/posts" defaultTimeout defaultTracker defaultHeaders
+getMePosts : String -> RequestOptions
+getMePosts root_path =
+  route root_path "GET" "/me/posts" defaultTimeout defaultTracker defaultHeaders
 
 
-getPostsToReview : RequestOptions
-getPostsToReview =
-  route
+getPostsToReview : String -> RequestOptions
+getPostsToReview root_path =
+  route root_path
     "GET"
     "/me/posts/review"
     defaultTimeout
@@ -178,9 +254,9 @@ getPostsToReview =
     defaultHeaders
 
 
-getPostToReview : String -> RequestOptions
-getPostToReview post_id =
-  route
+getPostToReview : String -> String -> RequestOptions
+getPostToReview root_path post_id =
+  route root_path
     "GET"
     ( "/me/posts/review/" ++ post_id )
     defaultTimeout
@@ -188,9 +264,9 @@ getPostToReview post_id =
     defaultHeaders
 
 
-getMePost : String -> RequestOptions
-getMePost post_id =
-  route
+getMePost : String -> String -> RequestOptions
+getMePost root_path post_id =
+  route root_path
     "GET"
     ( "/me/post/" ++ post_id )
     defaultTimeout
@@ -198,9 +274,9 @@ getMePost post_id =
     defaultHeaders
 
 
-getCommentsReplies : RequestOptions
-getCommentsReplies =
-  route
+getCommentsReplies : String -> RequestOptions
+getCommentsReplies root_path =
+  route root_path
     "GET"
     "/me/comments/replies"
     defaultTimeout
@@ -208,9 +284,9 @@ getCommentsReplies =
     defaultHeaders
 
 
-getPostComment : String -> Int -> RequestOptions
-getPostComment post_id page_index =
-  route
+getPostComment : String -> String -> Int -> RequestOptions
+getPostComment root_path post_id page_index =
+  route root_path
     "GET"
     ( "/post/" ++ post_id ++ "/comments/" ++ ( String.fromInt page_index ) )
     defaultTimeout
@@ -218,9 +294,9 @@ getPostComment post_id page_index =
     defaultHeaders
 
 
-getCommentReplies : String -> RequestOptions
-getCommentReplies comment_id =
-  route
+getCommentReplies : String -> String -> RequestOptions
+getCommentReplies root_path comment_id =
+  route root_path
     "GET"
     ( "/post/comments/replies/" ++ comment_id )
     defaultTimeout
@@ -228,9 +304,9 @@ getCommentReplies comment_id =
     defaultHeaders
 
 
-getCommentsAfter : String -> RequestOptions
-getCommentsAfter comment_id =
-  route
+getCommentsAfter : String -> String -> RequestOptions
+getCommentsAfter root_path comment_id =
+  route root_path
     "GET"
     ( "/post/comments/after/" ++ comment_id )
     defaultTimeout
@@ -238,9 +314,9 @@ getCommentsAfter comment_id =
     defaultHeaders
 
 
-getCommentsReviews : RequestOptions
-getCommentsReviews =
-  route
+getCommentsReviews : String -> RequestOptions
+getCommentsReviews root_path =
+  route root_path
     "GET"
     "/post/comments/review"
     defaultTimeout
@@ -248,9 +324,9 @@ getCommentsReviews =
     defaultHeaders
 
 
-getCommentsReviewDetails : String -> RequestOptions
-getCommentsReviewDetails comment_id =
-  route
+getCommentsReviewDetails : String -> String -> RequestOptions
+getCommentsReviewDetails root_path comment_id =
+  route root_path
     "GET"
     ( "/post/comments/review/" ++ comment_id )
     defaultTimeout
@@ -258,9 +334,9 @@ getCommentsReviewDetails comment_id =
     defaultHeaders
 
 
-publishComment : String -> RequestOptions
-publishComment comment_id =
-  route
+publishComment : String -> String -> RequestOptions
+publishComment root_path comment_id =
+  route root_path
     "POST"
     ( "/post/comment/review/publish/" ++ comment_id )
     defaultTimeout
@@ -268,9 +344,9 @@ publishComment comment_id =
     defaultHeaders
 
 
-rejectComment : String -> RequestOptions
-rejectComment comment_id =
-  route
+rejectComment : String -> String -> RequestOptions
+rejectComment root_path comment_id =
+  route root_path
     "POST"
     ( "/post/comment/review/reject/" ++ comment_id )
     defaultTimeout
@@ -278,9 +354,9 @@ rejectComment comment_id =
     defaultHeaders
 
 
-createComment : String -> Int -> RequestOptions
-createComment post_id page_index =
-  route
+createComment : String -> String -> Int -> RequestOptions
+createComment root_path post_id page_index =
+  route root_path
     "POST"
     ( "/post/comment/" ++ post_id ++ "/" ++ ( String.fromInt page_index ) )
     defaultTimeout
@@ -288,9 +364,9 @@ createComment post_id page_index =
     defaultHeaders
 
 
-replyComment : String -> RequestOptions
-replyComment comment_id =
-  route
+replyComment : String -> String -> RequestOptions
+replyComment root_path comment_id =
+  route root_path
     "POST"
     ( "/post/comment/reply/" ++ comment_id )
     defaultTimeout
@@ -298,9 +374,9 @@ replyComment comment_id =
     defaultHeaders
 
 
-getTags : RequestOptions
-getTags =
-  route
+getTags : String -> RequestOptions
+getTags root_path =
+  route root_path
     "GET"
     "/tags"
     defaultTimeout
@@ -308,9 +384,9 @@ getTags =
     defaultHeaders
 
 
-taggedPosts : String -> RequestOptions
-taggedPosts tag_id =
-  route
+taggedPosts : String -> String -> RequestOptions
+taggedPosts root_path tag_id =
+  route root_path
     "GET"
     ( "/posts/tag/" ++ tag_id )
     defaultTimeout

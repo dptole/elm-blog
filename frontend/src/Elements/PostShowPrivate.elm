@@ -44,6 +44,7 @@ type alias Model =
   , remove_post : Maybe Utils.Types.Post
   , review_post : Maybe Utils.Types.Post
   , http_cmds : Dict.Dict String ( Cmd Msg )
+  , flags : Utils.Types.MainModelFlags
   }
 
 
@@ -51,8 +52,8 @@ type alias Model =
 -- INIT
 
 
-initModel : Model
-initModel =
+initModel : Utils.Types.MainModelFlags -> Model
+initModel flags =
   Model
     []                    -- posts
     Utils.Work.notWorking -- work
@@ -60,10 +61,11 @@ initModel =
     Nothing               -- remove_post
     Nothing               -- review_post
     Utils.Funcs.emptyDict -- http_cmds
+    flags                 -- flags
 
 
-initModelLoading : Model
-initModelLoading =
+initModelLoading : Utils.Types.MainModelFlags -> Model
+initModelLoading flags =
   Model
     []                    -- posts
     loadingPosts          -- work
@@ -71,6 +73,7 @@ initModelLoading =
     Nothing               -- remove_post
     Nothing               -- review_post
     Utils.Funcs.emptyDict -- http_cmds
+    flags                 -- flags
 
 
 
@@ -96,7 +99,11 @@ update msg model =
       case response of
         Utils.Types.PromptResponseYes post ->
           let
-            http_cmd = Utils.Api.deletePost post.id GotRemovedPostResponse
+            http_cmd =
+              Utils.Api.deletePost
+                model.flags.api
+                post.id
+                GotRemovedPostResponse
 
             new_model =
               { model
@@ -119,7 +126,7 @@ update msg model =
 
     GotRemovedPostResponse _ ->
       let
-        http_cmd = getMyPosts
+        http_cmd = getMyPosts model.flags.api
 
         http_cmds = Dict.insert "MyPosts" http_cmd model.http_cmds
 
@@ -176,6 +183,7 @@ update msg model =
           let
             http_cmd =
               Utils.Api.updatePostStatus
+                model.flags.api
                 post.id
                 ( Utils.Encoders.postStatus Utils.Types.PostStatusReviewing )
                 GotReviewingPostResponse
@@ -207,7 +215,7 @@ update msg model =
           , remove_post = Nothing
           }
 
-        http_cmd = getMyPosts
+        http_cmd = getMyPosts model.flags.api
 
       in
         ( { model2
@@ -607,9 +615,10 @@ viewReviewingPostPrompt model =
 -- MISC GETTERS
 
 
-getMyPosts : Cmd Msg
-getMyPosts =
+getMyPosts : String -> Cmd Msg
+getMyPosts api =
   Utils.Api.getMyPosts
+    api
     GotMyPostsResponse
     Utils.Decoders.privatePostsResponse
 

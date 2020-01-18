@@ -44,6 +44,7 @@ type alias Model =
   , post_comments : Elements.PostComments.Model
   , tags : Maybe ( List Utils.Types.SinglePostTag )
   , date_time : String
+  , flags : Utils.Types.MainModelFlags
   }
 
 
@@ -51,15 +52,16 @@ type alias Model =
 -- INIT
 
 
-initModel : Model
-initModel =
+initModel : Utils.Types.MainModelFlags -> Model
+initModel flags =
   Model
-    Nothing                         -- posts
-    Nothing                         -- selected_post
-    Nothing                         -- preview_post
-    Elements.PostComments.initModel -- post_comments
-    Nothing                         -- tags
-    ""                              -- date_time
+    Nothing                                   -- posts
+    Nothing                                   -- selected_post
+    Nothing                                   -- preview_post
+    ( Elements.PostComments.initModel flags ) -- post_comments
+    Nothing                                   -- tags
+    ""                                        -- date_time
+    flags                                     -- flags
 
 
 
@@ -369,24 +371,27 @@ updateModelIsLoggedIn is_logged_in model =
 -- MISC HTTP
 
 
-getPublishedPosts : Cmd Msg
-getPublishedPosts =
+getPublishedPosts : String -> Cmd Msg
+getPublishedPosts api =
   Utils.Api.getPublishedPosts
+    api
     GotPublishedPostsResponse
     Utils.Decoders.homePosts
 
 
-getPublishedPost : String -> Cmd Msg
-getPublishedPost post_id =
+getPublishedPost : String -> String -> Cmd Msg
+getPublishedPost api post_id =
   Utils.Api.getPublishedPost
+    api
     post_id
     GotReadPostResponse
     Utils.Decoders.publishedPost
 
 
-hitPostStats : String -> Cmd Msg
-hitPostStats post_id =
+hitPostStats : String -> String -> Cmd Msg
+hitPostStats api post_id =
   Utils.Api.hitPostStats
+    api
     post_id
     WhateverHttpResponse
 

@@ -160,8 +160,8 @@ init js_flags nav_url nav_key =
         ( initMainModel flags nav_url nav_key )     -- main
 
     cmds =
-      [ Cmd.map SignInMsg Elements.SignIn.checkIfAlreadySignedIn
-      , Cmd.map PostShowPublicMsg Elements.PostShowPublic.getPublishedPosts
+      [ Cmd.map SignInMsg <| Elements.SignIn.checkIfAlreadySignedIn flags
+      , Cmd.map PostShowPublicMsg <| Elements.PostShowPublic.getPublishedPosts flags.api
       ]
 
     cmds2 =
@@ -187,17 +187,17 @@ init js_flags nav_url nav_key =
 initElementsModel : Utils.Types.MainModelFlags -> Url.Url -> Browser.Navigation.Key -> ElementsModel
 initElementsModel flags nav_url nav_key =
   ElementsModel
-    Elements.SignUp.initModel           -- sign_up
-    Elements.PostCreate.initModel       -- post_create
-    Elements.PostShowPrivate.initModel  -- post_show_private
-    Elements.SignIn.initModel           -- sign_in
-    Elements.PostReview.initModel       -- post_review
-    Elements.PostShowPublic.initModel   -- post_show_public
-    Elements.CommentReview.initModel    -- comment_review
-    Elements.Tags.initModel             -- tags
-    Elements.CommentReply.initModel     -- comment_reply
-    Elements.Profile.initModel          -- profile
-    Elements.PostDashboard.initModel    -- post_dashboard
+    ( Elements.SignUp.initModel flags )           -- sign_up
+    ( Elements.PostCreate.initModel flags )       -- post_create
+    ( Elements.PostShowPrivate.initModel flags )  -- post_show_private
+    ( Elements.SignIn.initModel flags )           -- sign_in
+    ( Elements.PostReview.initModel flags )       -- post_review
+    ( Elements.PostShowPublic.initModel flags )   -- post_show_public
+    ( Elements.CommentReview.initModel flags )    -- comment_review
+    ( Elements.Tags.initModel flags )             -- tags
+    ( Elements.CommentReply.initModel flags )     -- comment_reply
+    ( Elements.Profile.initModel flags )          -- profile
+    ( Elements.PostDashboard.initModel flags )    -- post_dashboard
 
 
 initMainModel : Utils.Types.MainModelFlags -> Url.Url -> Browser.Navigation.Key -> MainModel
@@ -214,7 +214,8 @@ initMainModel flags nav_url nav_key =
 initFlags : Utils.Types.MainModelFlags
 initFlags =
   Utils.Types.MainModelFlags
-    initFlagsUrl                          -- url
+    initFlagsUrl                      -- url
+    "http://localhost:9090/elm-blog"  -- api
 
 
 initFlagsUrl : Utils.Types.MainModelFlagsUrl
@@ -271,7 +272,7 @@ update msg model =
                   ( addWork fetchingPublishedPost model2
                   , Cmd.map
                       PostShowPublicMsg
-                      ( Elements.PostShowPublic.getPublishedPost post_id )
+                      ( Elements.PostShowPublic.getPublishedPost model.main.flags.api post_id )
                   )
 
                 Nothing ->
@@ -316,7 +317,7 @@ update msg model =
                 ( addWork loadingPublishedPosts model2
                 , Cmd.map
                     PostShowPublicMsg
-                    Elements.PostShowPublic.getPublishedPosts
+                    ( Elements.PostShowPublic.getPublishedPosts model.main.flags.api )
                 )
 
             Just ( Utils.Types.DashboardProfile, _ ) ->
@@ -337,7 +338,7 @@ update msg model =
                 ( model2, Cmd.none )
               else
                 ( updateModelCompPostCreate
-                    Elements.PostCreate.initModel
+                    ( Elements.PostCreate.initModel model.main.flags )
                     model2
                 , Cmd.none
                 )
@@ -350,6 +351,7 @@ update msg model =
                       Elements.PostCreate.update
                         ( Elements.PostCreate.FetchPost post_id )
                         ( Elements.PostCreate.initModelFetchingPostById
+                            model.main.flags
                             post_id
                         )
 
@@ -453,20 +455,20 @@ update msg model =
               model2 =
                 if is_page_post_show_private then
                   updateModelCompPostShowPrivate
-                    Elements.PostShowPrivate.initModelLoading
+                    ( Elements.PostShowPrivate.initModelLoading model.main.flags )
                     url_model
                 else if
                   is_page_dashboard_post_review &&
                   not is_fetching_reviewing_post
                 then
                   updateModelCompPostReview
-                    Elements.PostReview.initModelLoading
+                    ( Elements.PostReview.initModelLoading model.main.flags )
                     url_model
                 else
                   url_model
 
               get_my_posts_http_cmd =
-                Elements.PostShowPrivate.getMyPosts
+                Elements.PostShowPrivate.getMyPosts model.main.flags.api
 
               get_my_posts_cmd =
                 if is_page_post_show_private then
@@ -480,7 +482,7 @@ update msg model =
                   not is_fetching_reviewing_post
                 then
                   [ Cmd.map PostReviewMsg
-                      <| Elements.PostReview.getPostsToReview
+                      <| Elements.PostReview.getPostsToReview model.main.flags.api
                   ]
                 else
                   []
@@ -825,7 +827,7 @@ update msg model =
 
           Elements.PostCreate.CancelEdit ->
             ( updateModelCompPostCreate
-                Elements.PostCreate.initModel
+                ( Elements.PostCreate.initModel model.main.flags )
                 model
             , Browser.Navigation.pushUrl
                 model.main.nav.key
@@ -872,7 +874,7 @@ update msg model =
             case response of
               Ok post ->
                 ( updateModelCompPostCreate
-                    ( Elements.PostCreate.initModelFromPost post )
+                    ( Elements.PostCreate.initModelFromPost model.main.flags post )
                     model
                 , Cmd.none
                 )
@@ -1222,7 +1224,7 @@ update msg model =
                   Ok published_post ->
                     Cmd.batch
                       [ cmd2
-                      , Elements.PostShowPublic.hitPostStats published_post.id
+                      , Elements.PostShowPublic.hitPostStats model.main.flags.api published_post.id
                           |> Cmd.map PostShowPublicMsg
                       ]
 

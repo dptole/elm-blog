@@ -35,16 +35,18 @@ type alias Model =
   , tagged_posts : Maybe Utils.Types.TaggedPosts
   , work : Int
   , date_time : String
+  , flags : Utils.Types.MainModelFlags
   }
 
 
-initModel : Model
-initModel =
+initModel : Utils.Types.MainModelFlags -> Model
+initModel flags =
   Model
     []                      -- tags
     Nothing                 -- tagged_posts
     Utils.Work.notWorking   -- work
     ""                      -- date_time
+    flags                   -- flags
 
 
 
@@ -64,6 +66,7 @@ update msg model =
         , tags = []
         }
       , Utils.Api.getTags
+          model.flags.api
           GotFetchTagsResponse
           Utils.Decoders.getTags
       )
@@ -97,6 +100,7 @@ update msg model =
       in
         ( model2
         , Utils.Api.taggedPosts
+            model.flags.api
             tag_id
             GotFetchPostsResponse
             Utils.Decoders.taggedPosts

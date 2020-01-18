@@ -36,6 +36,7 @@ type alias Model =
   , work : Int
   , date_time : String
   , http_cmds : Dict.Dict String ( Cmd Msg )
+  , flags : Utils.Types.MainModelFlags
   }
 
 
@@ -47,13 +48,14 @@ type alias Uniforms =
 -- INIT
 
 
-initModel : Model
-initModel =
+initModel : Utils.Types.MainModelFlags -> Model
+initModel flags =
   Model
     []                      -- graphs
     Utils.Work.notWorking   -- work
     ""                      -- date_time
     Utils.Funcs.emptyDict   -- http_cmds
+    flags                   -- flags
 
 
 
@@ -71,6 +73,7 @@ update msg model =
       let
         http_cmd =
           Utils.Api.getMyPostsStatsGraph
+            model.flags.api
             GotFetchPostsGraphsResponse
             Utils.Decoders.graphsPostStats
 

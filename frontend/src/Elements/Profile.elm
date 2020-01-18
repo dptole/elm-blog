@@ -71,6 +71,7 @@ type alias Model =
   , final_avatar : List Utils.Types.AvatarDrawingCmd
   , dict_errors : Dict.Dict String String
   , http_cmds : Dict.Dict String ( Cmd Msg )
+  , flags : Utils.Types.MainModelFlags
   }
 
 
@@ -98,8 +99,8 @@ type alias Uniforms =
 -- INIT
 
 
-initModel : Model
-initModel =
+initModel : Utils.Types.MainModelFlags -> Model
+initModel flags =
   Model
     300                         -- canvas_width
     300                         -- canvas_height
@@ -114,6 +115,7 @@ initModel =
     []                          -- final_avatar
     Utils.Funcs.emptyDict       -- dict_errors
     Utils.Funcs.emptyDict       -- http_cmds
+    flags                       -- flags
 
 
 
@@ -134,6 +136,7 @@ update msg model =
       let
         http_cmd =
           Utils.Api.getMyAvatar
+            model.flags.api
             GotFetchAvatarResponse
             Utils.Decoders.userAvatar
 
@@ -177,6 +180,7 @@ update msg model =
       let
         http_cmd =
           Utils.Api.updatePassword
+            model.flags.api
             ( Utils.Encoders.updatePassword model.password )
             GotUpdatePasswordResponse
             Utils.Decoders.user_
@@ -226,6 +230,7 @@ update msg model =
         avatar = Langs.Avatar.encode model.drawing_cmds
         http_cmd =
           Utils.Api.updateAvatar
+            model.flags.api
             ( Utils.Encoders.updateAvatar avatar )
             GotSaveAvatarResponse
             Utils.Decoders.user

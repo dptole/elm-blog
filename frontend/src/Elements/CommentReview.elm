@@ -54,31 +54,34 @@ type alias Model =
   , post_comments : Elements.PostComments.Model
   , comment_id_detail : Maybe String
   , http_cmds : Dict.Dict String ( Cmd Msg )
+  , flags : Utils.Types.MainModelFlags
   }
 
 
-initModel : Model
-initModel =
+initModel : Utils.Types.MainModelFlags -> Model
+initModel flags =
   Model
-    Utils.Work.notWorking           -- work
-    []                              -- comments
-    Nothing                         -- comment_details
-    Elements.PostPreview.initModel  -- post_preview
-    Elements.PostComments.initModel -- post_comments
-    Nothing                         -- comment_id_detail
-    Utils.Funcs.emptyDict           -- http_cmds
+    Utils.Work.notWorking                     -- work
+    []                                        -- comments
+    Nothing                                   -- comment_details
+    Elements.PostPreview.initModel            -- post_preview
+    ( Elements.PostComments.initModel flags ) -- post_comments
+    Nothing                                   -- comment_id_detail
+    Utils.Funcs.emptyDict                     -- http_cmds
+    flags                                     -- flags
 
 
-initModelFetchingReviewComments : Model
-initModelFetchingReviewComments =
+initModelFetchingReviewComments : Utils.Types.MainModelFlags -> Model
+initModelFetchingReviewComments flags =
   Model
-    fetchingReviewComments          -- work
-    []                              -- comments
-    Nothing                         -- comment_details
-    Elements.PostPreview.initModel  -- post_preview
-    Elements.PostComments.initModel -- post_comments
-    Nothing                         -- comment_id_detail
-    Utils.Funcs.emptyDict           -- http_cmds
+    fetchingReviewComments                    -- work
+    []                                        -- comments
+    Nothing                                   -- comment_details
+    Elements.PostPreview.initModel            -- post_preview
+    ( Elements.PostComments.initModel flags ) -- post_comments
+    Nothing                                   -- comment_id_detail
+    Utils.Funcs.emptyDict                     -- http_cmds
+    flags                                     -- flags
 
 
 
@@ -96,10 +99,11 @@ update msg model =
       let
         http_cmd =
           Utils.Api.getCommentsReviews
+            model.flags.api
             GotFetchReviewCommentsResponse
             Utils.Decoders.postComments
 
-        model2 = initModelFetchingReviewComments
+        model2 = initModelFetchingReviewComments model.flags
 
       in
         ( { model2
@@ -132,6 +136,7 @@ update msg model =
       let
         http_cmd =
           Utils.Api.getCommentsReviewDetails
+            model.flags.api
             comment.id
             GotCommentDetailsResponse
             Utils.Decoders.postCommentReviewDetails
@@ -172,6 +177,7 @@ update msg model =
 
               post_comments =
                 Elements.PostComments.initModelToCommentReview
+                  model.flags
                   [comment_details.comment]
 
               post_comments2 =
@@ -237,6 +243,7 @@ update msg model =
                 let
                   http_cmd =
                     Utils.Api.publishComment
+                      model.flags.api
                       comment_id
                       GotPublishCommentResponse
                       Utils.Decoders.postComment
@@ -288,6 +295,7 @@ update msg model =
                 let
                   http_cmd =
                     Utils.Api.rejectComment
+                      model.flags.api
                       comment_id
                       GotRejectCommentResponse
                       Utils.Decoders.postComment

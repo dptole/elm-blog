@@ -57,6 +57,7 @@ type alias Model =
   , error_response : String
   , post_preview : Maybe Elements.PostPreview.Model
   , http_cmds : Dict.Dict String ( Cmd Msg )
+  , flags : Utils.Types.MainModelFlags
   }
 
 
@@ -64,8 +65,8 @@ type alias Model =
 -- INIT
 
 
-initModel : Model
-initModel =
+initModel : Utils.Types.MainModelFlags -> Model
+initModel flags =
   Model
     []                    -- posts
     Utils.Work.notWorking -- work
@@ -74,10 +75,11 @@ initModel =
     ""                    -- error
     Nothing               -- post_preview
     Utils.Funcs.emptyDict -- http_cmds
+    flags                 -- flags
 
 
-initModelLoading : Model
-initModelLoading =
+initModelLoading : Utils.Types.MainModelFlags -> Model
+initModelLoading flags =
   Model
     []                    -- posts
     loadingMessage        -- work
@@ -86,6 +88,7 @@ initModelLoading =
     ""                    -- error
     Nothing               -- post_preview
     Utils.Funcs.emptyDict -- http_cmds
+    flags                 -- flags
 
 
 
@@ -108,7 +111,7 @@ update msg model =
     
     PublishPost post ->
       let
-        http_cmd = publishPost post.id
+        http_cmd = publishPost model.flags.api post.id
 
         model2 =
           { model
@@ -124,9 +127,9 @@ update msg model =
 
     GotPublishPostResponse _ ->
       let
-        http_cmd = getPostsToReview
+        http_cmd = getPostsToReview model.flags.api
 
-        model2 = initModelLoading
+        model2 = initModelLoading model.flags
 
       in
         ( { model2
@@ -137,7 +140,7 @@ update msg model =
 
     RejectPost post ->
       let
-        http_cmd = rejectPost post.id
+        http_cmd = rejectPost model.flags.api post.id
 
         model2 =
           { model
@@ -154,9 +157,9 @@ update msg model =
 
     GotRejectPostResponse _ ->
       let
-        http_cmd = getPostsToReview
+        http_cmd = getPostsToReview model.flags.api
 
-        model2 = initModelLoading
+        model2 = initModelLoading model.flags
 
       in
         ( { model2
@@ -207,7 +210,7 @@ update msg model =
 
     ShowPostDetails post ->
       let
-        http_cmd = getPostDetails post.id
+        http_cmd = getPostDetails model.flags.api post.id
 
       in
         ( { model
@@ -264,7 +267,7 @@ update msg model =
 
     SubmitNewNote post ->
       let
-        http_cmd = addPostNotes post.id model.new_notes
+        http_cmd = addPostNotes model.flags.api post.id model.new_notes
 
       in
       ( { model
@@ -791,43 +794,48 @@ viewPageCount post_preview_model post =
 -- MISC GETTERS
 
 
-getPostsToReview : Cmd Msg
-getPostsToReview =
+getPostsToReview : String -> Cmd Msg
+getPostsToReview api =
   Utils.Api.getPostsToReview
+    api
     GotPostsToReviewResponse
     Utils.Decoders.postsForReviewResponse
 
 
-addPostNotes : String -> String -> Cmd Msg
-addPostNotes post_id notes =
+addPostNotes : String -> String -> String -> Cmd Msg
+addPostNotes api post_id notes =
   Utils.Api.addPostNotes
+    api
     post_id
     ( Utils.Encoders.postNotes notes )
     GotSubmitNewNoteResponse
     Utils.Decoders.post
 
 
-rejectPost : String -> Cmd Msg
-rejectPost post_id =
+rejectPost : String -> String -> Cmd Msg
+rejectPost api post_id =
   Utils.Api.updatePostStatus
+    api
     post_id
     ( Utils.Encoders.postStatus Utils.Types.PostStatusDraft )
     GotRejectPostResponse
     Utils.Decoders.post
 
 
-publishPost : String -> Cmd Msg
-publishPost post_id =
+publishPost : String -> String -> Cmd Msg
+publishPost api post_id =
   Utils.Api.updatePostStatus
+    api
     post_id
     ( Utils.Encoders.postStatus Utils.Types.PostStatusPublished )
     GotPublishPostResponse
     Utils.Decoders.post
 
 
-getPostDetails : String -> Cmd Msg
-getPostDetails post_id =
+getPostDetails : String -> String -> Cmd Msg
+getPostDetails api post_id =
   Utils.Api.getPostToReview
+    api
     post_id
     GotShowPostDetailsResponse
     Utils.Decoders.post

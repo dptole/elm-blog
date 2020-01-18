@@ -4,5 +4,5 @@ localdir="$(dirname "$0")"
 
 bash "$localdir/build.sh"
 
-elm reactor
+elm reactor --port 8080
 

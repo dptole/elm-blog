@@ -34,8 +34,8 @@ type Msg
 -- INIT
 
 
-initModel : Utils.Types.SvgCommentsModel
-initModel =
+initModel : Utils.Types.MainModelFlags -> Utils.Types.SvgCommentsModel
+initModel flags =
   Utils.Types.SvgCommentsModel
     ( Utils.Types.SvgCommentDataReplies [] )  -- data
     Nothing                                   -- expanded_comment
@@ -44,10 +44,11 @@ initModel =
     initConfs                                 -- confs
     initOrientation                           -- orientation
     (0, 0)                                    -- last_move
+    flags                                     -- flags
 
 
-initModelFromPostComment : List Utils.Types.PostComment -> Utils.Types.SvgCommentsModel
-initModelFromPostComment post_comments =
+initModelFromPostComment : Utils.Types.MainModelFlags -> List Utils.Types.PostComment -> Utils.Types.SvgCommentsModel
+initModelFromPostComment flags post_comments =
   Utils.Types.SvgCommentsModel
     ( fromPostCommentsToSvgCommentDataReplies
         post_comments
@@ -58,10 +59,11 @@ initModelFromPostComment post_comments =
     initConfs                             -- confs
     initOrientation                       -- orientation
     (0, 0)                                -- last_move
+    flags                                 -- flags
 
 
-initModelToCommentReview : List Utils.Types.PostComment -> Utils.Types.SvgCommentsModel
-initModelToCommentReview post_comments =
+initModelToCommentReview : Utils.Types.MainModelFlags -> List Utils.Types.PostComment -> Utils.Types.SvgCommentsModel
+initModelToCommentReview flags post_comments =
   Utils.Types.SvgCommentsModel
     ( fromPostCommentsToSvgCommentDataReplies
         post_comments
@@ -76,6 +78,7 @@ initModelToCommentReview post_comments =
         post_comments
     )                                       -- orientation
     (0, 0)                                  -- last_move
+    flags                                   -- flags
 
 
 initConfs : Utils.Types.SvgCommentsConfs
@@ -221,6 +224,7 @@ update msg model =
                   Cmd.none
                 else
                   Utils.Api.getCommentsAfter
+                    model.flags.api
                     focused_comment.id
                     GotCommentsAfterResponse
                     Utils.Decoders.postComments
@@ -244,6 +248,7 @@ update msg model =
                   Cmd.none
                 else
                   Utils.Api.getCommentReplies
+                    model.flags.api
                     focused_comment.id
                     GotCommentRepliesResponse
                     Utils.Decoders.postComments
@@ -267,6 +272,7 @@ update msg model =
                   Cmd.none
                 else
                   Utils.Api.getCommentReplies
+                    model.flags.api
                     focused_comment.id
                     GotCommentRepliesResponse
                     Utils.Decoders.postComments
@@ -290,6 +296,7 @@ update msg model =
                   Cmd.none
                 else
                   Utils.Api.getCommentsAfter
+                    model.flags.api
                     focused_comment.id
                     GotCommentsAfterResponse
                     Utils.Decoders.postComments
