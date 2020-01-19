@@ -173,6 +173,7 @@ update msg model =
           ( { model
             | posts = Just home_posts.posts
             , tags = Just home_posts.tags
+            , load_more_posts = List.length home_posts.posts > 9
             }
           , Cmd.none
           )
