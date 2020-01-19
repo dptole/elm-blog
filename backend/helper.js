@@ -372,7 +372,7 @@ util._extend(helper, {
 
       res.file = filepath => {
         const root_path = __dirname
-        const full_filepath = path.resolve(root_path, 'public', filepath)
+        const full_filepath = path.resolve(root_path, 'public/dist', filepath)
 
         if(!full_filepath.startsWith(root_path))
           return res.status(403).end()

@@ -9,7 +9,7 @@ cd "$localdir/../frontend"
 # [env]      dev/prod       ? -> prod
 bash "build.sh" "o" "prod"
 
-cp elm.min.js "$pwdlocaldir/public/js/elm.min.js"
+cp elm.min.js "$pwdlocaldir/public/dist/js/elm.min.js"
 
 cd "$localdir/.."
 . .env
@@ -17,6 +17,4 @@ cd "$localdir"
 
 NEW_API_URL="${API_URL//\//\\\/}"
 
-tmpfile="$(mktemp)"
-sed -r 's/(API_URL) = .*/\1 = "'$NEW_API_URL'";/' "$pwdlocaldir/public/index.html" > "$tmpfile"
-cat "$tmpfile" > "$pwdlocaldir/public/index.html"
+sed -r 's/(API_URL) = .*/\1 = "'$NEW_API_URL'";/' "$pwdlocaldir/public/src/index.html" > "$pwdlocaldir/public/dist/index.html"
