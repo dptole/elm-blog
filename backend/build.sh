@@ -1,5 +1,5 @@
 #!/bin/bash
-set -ex
+set -x
 localdir="$(dirname "$0")"
 pwdlocaldir="$(pwd)/$localdir"
 API_URL=http://localhost:9090/elm-blog
@@ -9,6 +9,7 @@ cd "$localdir/../frontend"
 # [env]      dev/prod       ? -> prod
 bash "build.sh" "o" "prod"
 
+mkdir -p "$pwdlocaldir/public/dist/js"
 cp elm.min.js "$pwdlocaldir/public/dist/js/elm.min.js"
 
 cd "$localdir/.."
