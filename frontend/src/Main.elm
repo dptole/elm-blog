@@ -1860,32 +1860,64 @@ viewPageHeader model =
 
 viewPageFooter : Model -> Html.Html Msg
 viewPageFooter model =
-  Html.div
-    [ Html.Attributes.class "footer" ]
-    [ Html.text "Made with "
+  let
+    modal_html =
+      case model.main.special_msg of
+        Utils.Types.NoSpecial ->
+          Html.div [] []
 
-    , Html.a
-        [ Html.Attributes.href "https://elm-lang.org"
-        , Html.Attributes.target "_blank"
-        ]
-        [ Html.text "Elm" ]
+        Utils.Types.ReSignIn ->
+          Html.div
+            [ Html.Attributes.class "modal-container" ]
+            [ Html.div
+                [ Html.Attributes.class "modal-container-box" ]
+                [ Html.div
+                    [ Html.Attributes.class "modal-container-close"
+                    , Html.Events.onClick
+                        <| SignInMsg
+                        <| Elements.SignIn.GotSubmitSignOutResponse
+                        <| Ok { success = True }
+                    ]
+                    [ Html.text "x" ]
 
-    , Html.text " by "
+                , Html.small
+                    []
+                    [ Html.text "Your session has expired!" ]
 
-    , Html.a
-        [ Html.Attributes.href "https://github.com/dptole"
-        , Html.Attributes.target "_blank"
-        ]
-        [ Html.text "dptole" ]
+                , Elements.SignIn.view model.comp.sign_in
+                    |> Html.map SignInMsg
+                ]
+            ]
 
-    , Html.text " · "
+  in
+    Html.div
+      [ Html.Attributes.class "footer" ]
+      [ modal_html
 
-    , Html.a
-        [ Html.Attributes.href "https://github.com/dptole/elm-blog"
-        , Html.Attributes.target "_blank"
-        ]
-        [ Html.text "github repo" ]
-    ]
+      , Html.text "Made with "
+
+      , Html.a
+          [ Html.Attributes.href "https://elm-lang.org"
+          , Html.Attributes.target "_blank"
+          ]
+          [ Html.text "Elm" ]
+
+      , Html.text " by "
+
+      , Html.a
+          [ Html.Attributes.href "https://github.com/dptole"
+          , Html.Attributes.target "_blank"
+          ]
+          [ Html.text "dptole" ]
+
+      , Html.text " · "
+
+      , Html.a
+          [ Html.Attributes.href "https://github.com/dptole/elm-blog"
+          , Html.Attributes.target "_blank"
+          ]
+          [ Html.text "github repo" ]
+      ]
 
 
 viewPublishedPosts : Model -> List ( Html.Html Msg )
