@@ -749,7 +749,7 @@ util._extend(db, {
         const sort = helper.shouldBe.string(options.sort, db.CONST.POSTS.DEFAULT_SORT)
         let limit = options.limit
 
-        const ls_posts = fs.readdirSync(db.getPostsPath())
+        const ls_posts = fs.readdirSync(db.getPostsPath()).reverse()
         const all_posts = []
 
         for(let i = 0; i < ls_posts.length; i++) {
@@ -1060,7 +1060,7 @@ util._extend(db, {
           status: db.posts.STATUS.PUBLISHED
         }),
         {
-          limit: Infinity
+          limit: 10
         }
       )
       const published_posts = []
@@ -1076,6 +1076,35 @@ util._extend(db, {
           )
         } catch(error) {
           helper.warn('db.posts.getAllPublished', error)
+        }
+      }
+
+      return published_posts
+    },
+
+    getAllPublishedAfter: async ({post_id}) => {
+      const posts = await db.posts.getAll(
+        ql.createBasicQuery({
+          status: db.posts.STATUS.PUBLISHED,
+          [ql.operator.LT('id')]: post_id
+        }),
+        {
+          limit: 10
+        }
+      )
+      const published_posts = []
+
+      for(let i = 0; i < posts.length; i++) {
+        const post = posts[i]
+
+        try {
+          published_posts.push(
+            db.posts.removePages(
+              await db.posts.fromPostToPublished(post)
+            )
+          )
+        } catch(error) {
+          helper.warn('db.posts.getAllPublishedAfter', error)
         }
       }
 
@@ -2408,6 +2437,28 @@ util._extend(db, {
 
       return {
         author_id: params.author_id
+      }
+    },
+
+    getPostsAfter: async params => {
+      const errors = server.errorObject.create()
+
+      if(!helper.is.object(params))
+        errors.addError(db.errors.INVALID_PAYLOAD.string())
+          .status(400)
+          .throw()
+
+      if(!db.validate.graph.post_id.test(params.post_id))
+        errors.addFieldError(
+          'post_id',
+          db.errors.INVALID_POST_ID.string()
+        )
+
+      if(errors.has())
+        errors.status(400).throw()
+
+      return {
+        post_id: params.post_id
       }
     }
   },

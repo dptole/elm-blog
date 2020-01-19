@@ -185,6 +185,14 @@ util._extend(routes, {
         tags: await db.tags.getAll()
       }),
 
+    '/elm-blog/posts/after/:post_id': async (req, res) =>
+      // @model published_post[]
+      res.json({
+        posts: await db.posts.getAllPublishedAfter(
+          await req.decodeParams(req.paramsDecoders.getPostsAfter)
+        )
+      }),
+
     '/elm-blog/posts/tag/:tag_id': async (req, res) =>
       // @model published_post[]
       res.json(

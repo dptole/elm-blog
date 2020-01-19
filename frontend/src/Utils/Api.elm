@@ -9,80 +9,6 @@ import Json.Encode
 
 
 
-create : String ->
-  { upsertPostRequest : Maybe String -> Json.Encode.Value -> ( Result Http.Error a -> msg ) -> Json.Decode.Decoder a -> Cmd msg
-  , addPostNotes : String -> Json.Encode.Value -> ( Result Http.Error a -> msg ) -> Json.Decode.Decoder a -> Cmd msg
-  , updatePostStatus : String -> Json.Encode.Value -> ( Result Http.Error a -> msg ) -> Json.Decode.Decoder a -> Cmd msg
-  , commitPostRequest : Json.Encode.Value -> ( Result Http.Error a -> msg ) -> Json.Decode.Decoder a -> Cmd msg
-  , createAccount : Json.Encode.Value -> ( Result Http.Error a -> msg ) -> Json.Decode.Decoder a -> Cmd msg
-  , getMyPosts : ( Result Http.Error a -> msg ) -> Json.Decode.Decoder a -> Cmd msg
-  , getMyPost : String -> ( Result Http.Error a -> msg ) -> Json.Decode.Decoder a -> Cmd msg
-  , getMe : ( Result Http.Error a -> msg ) -> Json.Decode.Decoder a -> Cmd msg
-  , signOut : ( Result Http.Error a -> msg ) -> Json.Decode.Decoder a -> Cmd msg
-  , signIn : Json.Encode.Value -> ( Result Http.Error a -> msg ) -> Json.Decode.Decoder a -> Cmd msg
-  , deletePost : String -> ( Result Http.Error () -> msg ) -> Cmd msg
-  , getPostsToReview : ( Result Http.Error a -> msg ) -> Json.Decode.Decoder a -> Cmd msg
-  , getPostToReview : String -> ( Result Http.Error a -> msg ) -> Json.Decode.Decoder a -> Cmd msg
-  , getPublishedPosts : ( Result Http.Error a -> msg ) -> Json.Decode.Decoder a -> Cmd msg
-  , getPublishedPost : String -> ( Result Http.Error a -> msg ) -> Json.Decode.Decoder a -> Cmd msg
-  , getPostComment : String -> Int -> ( Result Http.Error a -> msg ) -> Json.Decode.Decoder a -> Cmd msg
-  , getCommentReplies : String -> ( Result Http.Error a -> msg ) -> Json.Decode.Decoder a -> Cmd msg
-  , getCommentsAfter : String -> ( Result Http.Error a -> msg ) -> Json.Decode.Decoder a -> Cmd msg
-  , createComment : String -> Int -> Json.Encode.Value -> ( Result Http.Error a -> msg ) -> Json.Decode.Decoder a -> Cmd msg
-  , replyComment : String -> Json.Encode.Value -> ( Result Http.Error a -> msg ) -> Json.Decode.Decoder a -> Cmd msg
-  , justReplyComment : String -> Json.Encode.Value -> ( Result Http.Error () -> msg ) -> Cmd msg
-  , getCommentsReviews : ( Result Http.Error a -> msg ) -> Json.Decode.Decoder a -> Cmd msg
-  , getTags : ( Result Http.Error a -> msg ) -> Json.Decode.Decoder a -> Cmd msg
-  , getCommentsReviewDetails : String -> ( Result Http.Error a -> msg ) -> Json.Decode.Decoder a -> Cmd msg
-  , publishComment : String -> ( Result Http.Error a -> msg ) -> Json.Decode.Decoder a -> Cmd msg
-  , rejectComment : String -> ( Result Http.Error a -> msg ) -> Json.Decode.Decoder a -> Cmd msg
-  , taggedPosts : String -> ( Result Http.Error a -> msg ) -> Json.Decode.Decoder a -> Cmd msg
-  , getCommentsReplies : ( Result Http.Error a -> msg ) -> Json.Decode.Decoder a -> Cmd msg
-  , updatePassword : Json.Encode.Value -> ( Result Http.Error a -> msg ) -> Json.Decode.Decoder a -> Cmd msg
-  , updateAvatar : Json.Encode.Value -> ( Result Http.Error a -> msg ) -> Json.Decode.Decoder a -> Cmd msg
-  , getMyAvatar : ( Result Http.Error a -> msg ) -> Json.Decode.Decoder a -> Cmd msg
-  , getMyPostsStatsGraph : ( Result Http.Error a -> msg ) -> Json.Decode.Decoder a -> Cmd msg
-  , getAvatar : String -> ( Result Http.Error a -> msg ) -> Json.Decode.Decoder a -> Cmd msg
-  , hitPostStats : String -> ( Result Http.Error () -> msg ) -> Cmd msg
-  }
-create root_path =
-  { upsertPostRequest = upsertPostRequest root_path
-  , addPostNotes = addPostNotes root_path
-  , updatePostStatus = updatePostStatus root_path
-  , commitPostRequest = commitPostRequest root_path
-  , createAccount = createAccount root_path
-  , getMyPosts = getMyPosts root_path
-  , getMyPost = getMyPost root_path
-  , getMe = getMe root_path
-  , signOut = signOut root_path
-  , signIn = signIn root_path
-  , deletePost = deletePost root_path
-  , getPostsToReview = getPostsToReview root_path
-  , getPostToReview = getPostToReview root_path
-  , getPublishedPosts = getPublishedPosts root_path
-  , getPublishedPost = getPublishedPost root_path
-  , getPostComment = getPostComment root_path
-  , getCommentReplies = getCommentReplies root_path
-  , getCommentsAfter = getCommentsAfter root_path
-  , createComment = createComment root_path
-  , replyComment = replyComment root_path
-  , justReplyComment = justReplyComment root_path
-  , getCommentsReviews = getCommentsReviews root_path
-  , getTags = getTags root_path
-  , getCommentsReviewDetails = getCommentsReviewDetails root_path
-  , publishComment = publishComment root_path
-  , rejectComment = rejectComment root_path
-  , taggedPosts = taggedPosts root_path
-  , getCommentsReplies = getCommentsReplies root_path
-  , updatePassword = updatePassword root_path
-  , updateAvatar = updateAvatar root_path
-  , getMyAvatar = getMyAvatar root_path
-  , getMyPostsStatsGraph = getMyPostsStatsGraph root_path
-  , getAvatar = getAvatar root_path
-  , hitPostStats = hitPostStats root_path
-  }
-
-
 upsertPostRequest : String -> Maybe String -> Json.Encode.Value -> ( Result Http.Error a -> msg ) -> Json.Decode.Decoder a -> Cmd msg
 upsertPostRequest root_path post_id json_body expect_kind expect_decoder =
   case post_id of
@@ -328,6 +254,22 @@ getPublishedPosts root_path expect_kind expect_decoder =
       }
 
 
+getPublishedPostsAfter : String -> String -> ( Result Http.Error a -> msg ) -> Json.Decode.Decoder a -> Cmd msg
+getPublishedPostsAfter root_path post_id expect_kind expect_decoder =
+  let
+    endpoint = Utils.ApiRoutes.getPublishedPostsAfter root_path post_id
+  in
+    Http.request
+      { url = endpoint.url
+      , method = endpoint.method
+      , timeout = endpoint.timeout
+      , tracker = endpoint.tracker
+      , headers = endpoint.headers
+      , body = Http.emptyBody
+      , expect = Http.expectJson expect_kind expect_decoder
+      }
+
+
 getPublishedPost : String -> String -> ( Result Http.Error a -> msg ) -> Json.Decode.Decoder a -> Cmd msg
 getPublishedPost root_path post_id expect_kind expect_decoder =
   let
@@ -342,6 +284,7 @@ getPublishedPost root_path post_id expect_kind expect_decoder =
       , body = Http.emptyBody
       , expect = Http.expectJson expect_kind expect_decoder
       }
+
 
 
 getPostComment : String -> String -> Int -> ( Result Http.Error a -> msg ) -> Json.Decode.Decoder a -> Cmd msg

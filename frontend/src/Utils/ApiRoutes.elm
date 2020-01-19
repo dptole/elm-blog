@@ -38,83 +38,6 @@ defaultHeaders =
   []
 
 
-type alias ApiRoutes =
-  { postSignUp : RequestOptions
-  , postSignIn : RequestOptions
-  , postDraft : RequestOptions
-  , deletePost : String -> RequestOptions
-  , addPostNotes : String -> RequestOptions
-  , updatePostStatus : String -> RequestOptions
-  , getPublishedPosts : RequestOptions
-  , getPublishedPost : String -> RequestOptions
-  , commitDraft : RequestOptions
-  , putDraft : RequestOptions
-  , updatePassword : RequestOptions
-  , updateAvatar : RequestOptions
-  , getMyAvatar : RequestOptions
-  , getMyPostsStatsGraph : RequestOptions
-  , hitPostStats : String -> RequestOptions
-  , getAvatar : String -> RequestOptions
-  , getMe : RequestOptions
-  , getSignOut : RequestOptions
-  , getMePosts : RequestOptions
-  , getPostsToReview : RequestOptions
-  , getPostToReview : String -> RequestOptions
-  , getMePost : String -> RequestOptions
-  , getCommentsReplies : RequestOptions
-  , getPostComment : String -> Int -> RequestOptions
-  , getCommentReplies : String -> RequestOptions
-  , getCommentsAfter : String -> RequestOptions
-  , getCommentsReviews : RequestOptions
-  , getCommentsReviewDetails : String -> RequestOptions
-  , publishComment : String -> RequestOptions
-  , rejectComment : String -> RequestOptions
-  , createComment : String -> Int -> RequestOptions
-  , replyComment : String -> RequestOptions
-  , getTags : RequestOptions
-  , taggedPosts : String -> RequestOptions
-  }
-
-
-create : String -> ApiRoutes
-create root_path =
-  ApiRoutes
-    ( postSignUp root_path )
-    ( postSignIn root_path )
-    ( postDraft root_path )
-    ( deletePost root_path )
-    ( addPostNotes root_path )
-    ( updatePostStatus root_path )
-    ( getPublishedPosts root_path )
-    ( getPublishedPost root_path )
-    ( commitDraft root_path )
-    ( putDraft root_path )
-    ( updatePassword root_path )
-    ( updateAvatar root_path )
-    ( getMyAvatar root_path )
-    ( getMyPostsStatsGraph root_path )
-    ( hitPostStats root_path )
-    ( getAvatar root_path )
-    ( getMe root_path )
-    ( getSignOut root_path )
-    ( getMePosts root_path )
-    ( getPostsToReview root_path )
-    ( getPostToReview root_path )
-    ( getMePost root_path )
-    ( getCommentsReplies root_path )
-    ( getPostComment root_path )
-    ( getCommentReplies root_path )
-    ( getCommentsAfter root_path )
-    ( getCommentsReviews root_path )
-    ( getCommentsReviewDetails root_path )
-    ( publishComment root_path )
-    ( rejectComment root_path )
-    ( createComment root_path )
-    ( replyComment root_path )
-    ( getTags root_path )
-    ( taggedPosts root_path )
-
-
 
 -- ROUTES
 
@@ -167,6 +90,16 @@ updatePostStatus root_path post_id =
 getPublishedPosts : String -> RequestOptions
 getPublishedPosts root_path =
   route root_path "GET" "/posts" defaultTimeout defaultTracker defaultHeaders
+
+
+getPublishedPostsAfter : String -> String -> RequestOptions
+getPublishedPostsAfter root_path post_id =
+  route root_path
+    "GET"
+    ( "/posts/after/" ++ post_id )
+    defaultTimeout
+    defaultTracker
+    defaultHeaders
 
 
 getPublishedPost : String -> String -> RequestOptions

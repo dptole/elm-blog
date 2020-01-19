@@ -150,8 +150,17 @@ div.footer
   padding: 10px;
 }
 
-div.footer a {
-  color: black;
+div.post-show-public-load-more {
+  margin: 20px;
+  text-align: center;
+}
+
+div.footer a { color: black; }
+
+div.footer a:hover,
+a:hover
+{
+  color: white;
 }
 
 div.header > ul > li * {

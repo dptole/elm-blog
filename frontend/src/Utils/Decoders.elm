@@ -183,8 +183,8 @@ commentReply =
 homePosts : Json.Decode.Decoder Utils.Types.HomePosts
 homePosts =
   Json.Decode.succeed Utils.Types.HomePosts
-    |> Json.Decode.Pipeline.required "tags"
-        ( Json.Decode.list singlePostTag )
+    |> Json.Decode.Pipeline.optional "tags"
+        ( Json.Decode.list singlePostTag ) []
     |> Json.Decode.Pipeline.required "posts"
         ( Json.Decode.list publishedPostNoPages )
 

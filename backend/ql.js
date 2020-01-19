@@ -10,6 +10,7 @@ util._extend(ql, {
   OR: '&|&',
 
   OP_GT: '>>',
+  OP_LT: '<<',
   OP_NEQ: '!',
   OP_IN: '[]',
 
@@ -28,6 +29,7 @@ util._extend(ql, {
 
   operator: {
     GT: field => field + ql.OP_GT,
+    LT: field => field + ql.OP_LT,
     NEQ: field => field + ql.OP_NEQ,
     IN: field => field + ql.OP_IN
   },
@@ -47,7 +49,7 @@ util._extend(ql, {
         test: (ctx_value, search_value) => ctx_value > search_value
       },
       {
-        symbol: '<<',
+        symbol: ql.OP_LT,
         test: (ctx_value, search_value) => ctx_value < search_value
       },
       {

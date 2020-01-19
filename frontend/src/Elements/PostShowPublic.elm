@@ -10,6 +10,7 @@ import Utils.Routes
 import Utils.Types
 import Utils.Work
 
+import Browser.Dom
 import Html
 import Html.Attributes
 import Html.Events
@@ -23,8 +24,10 @@ import Http
 type Msg
   = SpecialMsg Utils.Types.SpecialMsg
   | GotPublishedPostsResponse ( Result Http.Error Utils.Types.HomePosts )
+  | GotPublishedPostsAfterResponse ( Result Http.Error Utils.Types.HomePosts )
   | GotReadPostResponse ( Result Http.Error Utils.Types.PublishedPost )
   | WhateverHttpResponse ( Result Http.Error () )
+  | GetViewport Browser.Dom.Viewport
 
   -- Elements/PostPreview
   | PostPreviewMsg Elements.PostPreview.Msg
@@ -45,6 +48,9 @@ type alias Model =
   , tags : Maybe ( List Utils.Types.SinglePostTag )
   , date_time : String
   , flags : Utils.Types.MainModelFlags
+  , is_page_bottom : Bool
+  , load_more_posts : Bool
+  , work : Int
   }
 
 
@@ -62,6 +68,9 @@ initModel flags =
     Nothing                                   -- tags
     ""                                        -- date_time
     flags                                     -- flags
+    False                                     -- is_page_bottom
+    True                                      -- load_more_posts
+    Utils.Work.notWorking                     -- work
 
 
 
@@ -74,6 +83,86 @@ update msg model =
     SpecialMsg _ ->
       -- Handled by the module that owns Browser.application
       ( model, Cmd.none )
+
+    GetViewport viewport ->
+      let
+        model2 =
+          { model
+          | is_page_bottom =
+              viewport.scene.height ==
+              viewport.viewport.height + viewport.viewport.y
+          }
+
+        posts = Maybe.withDefault [] model.posts
+
+        last_post_id =
+          case List.drop ( List.length posts - 1 ) posts |> List.head of
+            Just post ->
+              post.id
+
+            Nothing ->
+              ""
+
+        cmd =
+          if
+            List.length posts > 0 &&
+            model2.is_page_bottom &&
+            model2.load_more_posts
+          then
+            getPublishedPostsAfter model.flags.api last_post_id
+
+          else
+            Cmd.none
+
+        model3 =
+          if Cmd.none == cmd then
+            model2
+
+          else
+            { model2
+            | work = Utils.Work.addWork loadingMorePosts model2.work
+            }
+
+      in
+        ( model3
+        , cmd
+        )
+
+    GotPublishedPostsAfterResponse response ->
+      let
+        model2 =
+          { model
+          | work = Utils.Work.removeWork loadingMorePosts model.work
+          }
+
+      in
+        case response of
+          Ok json ->
+            if List.length json.posts < 1 then
+              ( { model2
+                | load_more_posts = False
+                }
+              , Cmd.none
+              )
+
+            else
+              case model2.posts of
+                Just posts ->
+                  ( { model2
+                    | posts = List.append posts json.posts |> Just
+                    }
+                  , Cmd.none
+                  )
+
+                Nothing ->
+                  ( { model2
+                    | posts = Just json.posts
+                    }
+                  , Cmd.none
+                  )
+
+          Err _ ->
+            ( model2, Cmd.none )
 
     WhateverHttpResponse _ ->
       ( model, Cmd.none )
@@ -275,6 +364,15 @@ viewPostsList model =
                     )
               ) posts
             )
+          |> Utils.Funcs.prepend
+              ( if Utils.Work.isWorkingOn loadingMorePosts model.work then
+                  [ Html.div
+                      [ Html.Attributes.class "loadingdotsafter post-show-public-load-more" ]
+                      [ Html.text "Loading more posts" ]
+                  ]
+                else
+                  []
+              )
 
         else
           no_posts
@@ -379,6 +477,15 @@ getPublishedPosts api =
     Utils.Decoders.homePosts
 
 
+getPublishedPostsAfter : String -> String -> Cmd Msg
+getPublishedPostsAfter api post_id =
+  Utils.Api.getPublishedPostsAfter
+    api
+    post_id
+    GotPublishedPostsAfterResponse
+    Utils.Decoders.homePosts
+
+
 getPublishedPost : String -> String -> Cmd Msg
 getPublishedPost api post_id =
   Utils.Api.getPublishedPost
@@ -394,4 +501,14 @@ hitPostStats api post_id =
     api
     post_id
     WhateverHttpResponse
+
+
+
+-- MISC WORK
+
+
+loadingMorePosts : Int
+loadingMorePosts = 1
+
+
 

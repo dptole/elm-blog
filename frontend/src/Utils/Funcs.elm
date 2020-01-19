@@ -95,6 +95,11 @@ zip list1 list2 =
   List.map2 Tuple.pair list1 list2
 
 
+prepend : List a -> List a -> List a
+prepend list1 list2 =
+  List.append list2 list1
+
+
 
 -- MISC DATE
 

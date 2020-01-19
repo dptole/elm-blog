@@ -22,6 +22,7 @@ import Utils.Types
 import Utils.Work
 
 import Browser
+import Browser.Dom
 import Browser.Navigation
 import Dict
 import Html
@@ -251,7 +252,12 @@ update msg model =
 
       in
         ( model2
-        , Cmd.none
+        , Task.perform
+            (\v ->
+              PostShowPublicMsg
+                <| Elements.PostShowPublic.GetViewport v
+            )
+            <| Browser.Dom.getViewport
         )
 
     UrlChanged url ->
@@ -315,6 +321,8 @@ update msg model =
                 ( model2, Cmd.none )
               else
                 ( addWork loadingPublishedPosts model2
+                    |> updateModelCompPostShowPublic
+                        ( Elements.PostShowPublic.initModel model.main.flags )
                 , Cmd.map
                     PostShowPublicMsg
                     ( Elements.PostShowPublic.getPublishedPosts model.main.flags.api )
