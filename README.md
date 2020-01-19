@@ -39,5 +39,5 @@ If you want to know more info about the `install-container.sh` process go to the
 [elm_0_19_1]: https://github.com/elm/compiler/blob/24d3a89469e75cf7aa579442ecaf5ddfdd192ab2/installers/linux/README.md
 [demo]: https://dptole.ngrok.io/elm-blog/
 [docker_installer]: https://github.com/dptole/elm-blog/blob/master/docker/install-container.sh
-[docker_wiki]: https://github.com/dptole/elm-blog/wiki/Docker
+[docker_wiki]: https://github.com/dptole/elm-blog/wiki/Building-with-docker
 [license]: LICENSE
