@@ -165,8 +165,21 @@ init js_flags nav_url nav_key =
       , Cmd.map PostShowPublicMsg <| Elements.PostShowPublic.getPublishedPosts flags.api
       ]
 
+    href =
+      case getRoute model of
+        Just _ ->
+          flags.url.href
+
+        Nothing ->
+          flags.url.origin ++
+          ( if isProdEnv then
+              Utils.Routes.root
+            else
+              Utils.Routes.home
+          )
+
     cmds2 =
-      case Url.fromString flags.url.href of
+      case Url.fromString href of
         Just url ->
           let
             location_cmd =

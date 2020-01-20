@@ -21,6 +21,23 @@ All the CSS comes from Elm and update according to the model.
 
 The blog uses Elm for the frontend and Nodejs, with no dependencies, for the backend.
 
+# Install
+
+Installing the blog locally will open up a server at http://localhost:9090/elm-blog/.
+
+Requirements:
+
+- Nodejs 12+
+- Uglifyjs 3.6.4 (`npm i -g uglify-js@3.6.4`)
+- Elm 0.19.1
+
+```shell
+git clone https://github.com/dptole/elm-blog
+bash elm-blog/run.sh
+```
+
+To know more about the local building process visit the [wiki][building_manually_wiki].
+
 # Docker
 
 In order to easily recreate the blog locally you can use the docker installer [here][docker_installer] and a local server will be available at http://localhost:9090/elm-blog/ (prod with Nodejs) and http://localhost:8080/src/Main.elm (dev with elm reactor).
@@ -40,4 +57,5 @@ If you want to know more info about the `install-container.sh` process go to the
 [demo]: https://dptole.ngrok.io/elm-blog/
 [docker_installer]: https://github.com/dptole/elm-blog/blob/master/docker/install-container.sh
 [docker_wiki]: https://github.com/dptole/elm-blog/wiki/Building-with-docker
+[building_manually_wiki]: https://github.com/dptole/elm-blog/wiki/Building-manually
 [license]: LICENSE
