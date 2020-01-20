@@ -1907,6 +1907,7 @@ viewPageFooter model =
       , Html.a
           [ Html.Attributes.href "https://elm-lang.org"
           , Html.Attributes.target "_blank"
+          , Html.Attributes.rel "noreferrer"
           ]
           [ Html.text "Elm" ]
 
@@ -1915,6 +1916,7 @@ viewPageFooter model =
       , Html.a
           [ Html.Attributes.href "https://github.com/dptole"
           , Html.Attributes.target "_blank"
+          , Html.Attributes.rel "noreferrer"
           ]
           [ Html.text "dptole" ]
 
@@ -1923,6 +1925,7 @@ viewPageFooter model =
       , Html.a
           [ Html.Attributes.href "https://github.com/dptole/elm-blog"
           , Html.Attributes.target "_blank"
+          , Html.Attributes.rel "noreferrer"
           ]
           [ Html.text "github repo" ]
       ]

@@ -47,6 +47,8 @@ util._extend(routes, {
     '/elm-blog/': (req, res) => {
       helper.request.log(req, res)
 
+      res.setHeader('cache-control', 'max-age=8337601')
+
       res.header(
         public_paths.root.headers
       ).file(
@@ -56,6 +58,8 @@ util._extend(routes, {
 
     '/elm-blog/public/*': (req, res) => {
       helper.request.log(req, res)
+
+      res.setHeader('cache-control', 'max-age=8337601')
 
       const url_path = helper.shouldBe.string(req.__params['*'])
 
