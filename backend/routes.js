@@ -100,7 +100,7 @@ util._extend(routes, {
       res.status(200).json({success: auth_token !== null})
     },
 
-    '/elm-blog/tags': async (req, res) =>
+    '/elm-blog/all_tags': async (req, res) =>
       // @model tag[]
       res.json({
         tags: await db.posts.getAllTags()

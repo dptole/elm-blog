@@ -311,7 +311,7 @@ getTags : String -> RequestOptions
 getTags root_path =
   route root_path
     "GET"
-    "/tags"
+    "/all_tags"
     defaultTimeout
     defaultTracker
     defaultHeaders

@@ -58,7 +58,7 @@ html {
 body {
   padding: 0;
   margin: 0;
-  animation: imgshow 2s;
+  /*animation: imgshow 2s;*/
 }
 
 hr {
@@ -724,9 +724,9 @@ div.comment-replies-container > div > fieldset.comment-reply-recursive > legend 
   }
 }
 
-@media (max-width: 319px) {
+@media (max-width: 399px) {
   html:after {
-    content: "The device must be at least 320px wide";
+    content: "The device must be at least 400px wide";
     font-size: 24px;
     display: flex;
     align-items: center;
