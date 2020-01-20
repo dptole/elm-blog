@@ -370,30 +370,43 @@ util._extend(helper, {
         return res
       }
 
-      res.file = filepath => {
+      res.file = (filepath, autopipe = true, autocache = true) => {
         const root_path = __dirname
         const full_filepath = path.resolve(root_path, 'public/dist', filepath)
 
         if(!full_filepath.startsWith(root_path))
           return res.status(403).end()
 
-        const filestream = fs.createReadStream(full_filepath)
+        const filestream = autocache && server.cache.has(full_filepath)
+          ? server.cache.get(full_filepath, req, res)
+          : fs.createReadStream(full_filepath)
 
-        if(req.supportsBrotli())
-          return filestream.pipe(
-            res.brotli.createCompress(
-              fs.statSync(full_filepath).size
+        if(!filestream.__ignore_compression) {
+          if(req.supportsBrotli()) {
+            server.cache.store(full_filepath, {compression: 'brotli'})
+
+            return filestream.pipe(
+              res.brotli.createCompress(
+                fs.statSync(full_filepath).size
+              )
+            ).pipe(
+              (res.brotli.setup(), res)
             )
-          ).pipe(
-            (res.brotli.setup(), res)
-          )
+          }
 
-        if(req.supportsGzip())
-          return filestream.pipe(
-            res.gzip.createCompress()
-          ).pipe(
-            (res.gzip.setup(), res)
-          )
+          if(req.supportsGzip()) {
+            server.cache.store(full_filepath, {compression: 'gzip'})
+
+            return filestream.pipe(
+              res.gzip.createCompress()
+            ).pipe(
+              (res.gzip.setup(), res)
+            )
+          }
+        }
+
+        if(!filestream.__cached)
+          server.cache.store(full_filepath)
 
         return filestream.pipe(res)
       }

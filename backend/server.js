@@ -1,6 +1,9 @@
 const http = require('http')
 const util = require('util')
 const events = require('events')
+const fs = require('fs')
+const stream = require('stream')
+const zlib = require('zlib')
 const server = new events
 
 
@@ -85,6 +88,71 @@ util._extend(server, {
       }
 
       return self
+    }
+  },
+
+  cache: {
+    map: new Map,
+
+    has: route_url =>
+      server.cache.map.has(route_url),
+
+    store: (full_filepath, options) => {
+      let filestream = null
+
+      if(options && options.compression === 'brotli')
+        filestream = fs.createReadStream(full_filepath).pipe(
+          zlib.createBrotliCompress({
+            params: {
+              [zlib.constants.BROTLI_PARAM_MODE]: zlib.constants.BROTLI_MODE_TEXT,
+              [zlib.constants.BROTLI_PARAM_QUALITY]: zlib.constants.BROTLI_MAX_QUALITY,
+              [zlib.constants.BROTLI_PARAM_SIZE_HINT]: fs.statSync(full_filepath).size
+            }
+          })
+        )
+
+      else if(options && options.compression === 'gzip')
+        filestream = fs.createReadStream(full_filepath).pipe(
+          zlib.createGzip({
+            level: zlib.constants.Z_BEST_COMPRESSION
+          })
+        )
+
+      else
+        filestream = fs.createReadStream(full_filepath)
+
+      let b = Buffer.from('')
+
+      const onData = c =>
+        b = Buffer.concat([b, c])
+
+      const onEnd = () => {
+        filestream.removeListener('data', onData)
+        server.cache.map.set(full_filepath, {b, options})
+      }
+
+      filestream.on('data', onData)
+      filestream.once('end', onEnd)
+    },
+
+    get: (route_url, req, res) => {
+      console.log([
+        ...server.cache.map.keys()
+      ])
+
+      const {b, options} = server.cache.map.get(route_url)
+      const pt = new stream.PassThrough
+      pt.push(b)
+      pt.push(null)
+      pt.__ignore_compression = true
+      pt.__cached = true
+
+      if(options && options.compression === 'brotli')
+        res.brotli.setup()
+      else if(options && options.compression === 'gzip')
+        res.gzip.setup()
+
+      return pt
     }
   },
 
