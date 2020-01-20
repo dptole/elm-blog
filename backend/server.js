@@ -136,10 +136,6 @@ util._extend(server, {
     },
 
     get: (route_url, req, res) => {
-      console.log([
-        ...server.cache.map.keys()
-      ])
-
       const {b, options} = server.cache.map.get(route_url)
       const pt = new stream.PassThrough
       pt.push(b)
