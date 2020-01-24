@@ -377,13 +377,13 @@ util._extend(helper, {
         if(!full_filepath.startsWith(root_path))
           return res.status(403).end()
 
-        const filestream = autocache && server.cache.has(full_filepath)
+        const filestream = autocache && server.cache.has(full_filepath, req, res)
           ? server.cache.get(full_filepath, req, res)
           : fs.createReadStream(full_filepath)
 
         if(!filestream.__ignore_compression) {
           if(req.supportsBrotli()) {
-            server.cache.store(full_filepath, {compression: 'brotli'})
+            server.cache.store(full_filepath, req, res)
 
             return filestream.pipe(
               res.brotli.createCompress(
@@ -395,7 +395,7 @@ util._extend(helper, {
           }
 
           if(req.supportsGzip()) {
-            server.cache.store(full_filepath, {compression: 'gzip'})
+            server.cache.store(full_filepath, req, res)
 
             return filestream.pipe(
               res.gzip.createCompress()
@@ -406,7 +406,7 @@ util._extend(helper, {
         }
 
         if(!filestream.__cached)
-          server.cache.store(full_filepath)
+          server.cache.store(full_filepath, req, res)
 
         return filestream.pipe(res)
       }

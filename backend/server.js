@@ -94,31 +94,40 @@ util._extend(server, {
   cache: {
     map: new Map,
 
-    has: route_url =>
-      server.cache.map.has(route_url),
+    has: (route_url, req, res) =>
+      server.cache.map.has(
+        (
+          req.supportsBrotli()
+            ? 'brotli'
+            : req.supportsGzip()
+            ? 'gzip'
+            : ''
+        ) +
+        ':' +
+        route_url
+      ),
 
-    store: (full_filepath, options) => {
+    store: (full_filepath, req, res) => {
       let filestream = fs.createReadStream(full_filepath)
       let compressstream = null
       let compression = ''
 
-      switch(options && options.compression) {
-        case 'brotli':
-          compression = options.compression
-          compressstream = zlib.createBrotliCompress({
-            params: {
-              [zlib.constants.BROTLI_PARAM_MODE]: zlib.constants.BROTLI_MODE_TEXT,
-              [zlib.constants.BROTLI_PARAM_QUALITY]: zlib.constants.BROTLI_MAX_QUALITY,
-              [zlib.constants.BROTLI_PARAM_SIZE_HINT]: fs.statSync(full_filepath).size
-            }
-          })
-          break;
+      if(req.supportsBrotli()) {
+        compression = 'brotli'
+        compressstream = zlib.createBrotliCompress({
+          params: {
+            [zlib.constants.BROTLI_PARAM_MODE]: zlib.constants.BROTLI_MODE_TEXT,
+            [zlib.constants.BROTLI_PARAM_QUALITY]: zlib.constants.BROTLI_MAX_QUALITY,
+            [zlib.constants.BROTLI_PARAM_SIZE_HINT]: fs.statSync(full_filepath).size
+          }
+        })
 
-        case 'gzip':
-          compression = options.compression
-          compressstream = zlib.createGzip({
-            level: zlib.constants.Z_BEST_COMPRESSION
-          })
+      } else if(req.supportsGzip()) {
+        compression = 'gzip'
+        compressstream = zlib.createGzip({
+          level: zlib.constants.Z_BEST_COMPRESSION
+        })
+
       }
 
       if(compressstream) filestream = filestream.pipe(compressstream)
@@ -130,7 +139,7 @@ util._extend(server, {
 
       const onEnd = () => {
         filestream.removeListener('data', onData)
-        server.cache.map.set(compression + ':' + full_filepath, {b, options})
+        server.cache.map.set(compression + ':' + full_filepath, b)
       }
 
       filestream.on('data', onData)
@@ -144,16 +153,16 @@ util._extend(server, {
         ? 'gzip'
         : ''
 
-      const {b, options} = server.cache.map.get(compression + ':' + route_url)
       const pt = new stream.PassThrough
-      pt.push(b)
+      const b = server.cache.map.get(compression + ':' + route_url)
+      if(b) pt.push(b)
       pt.push(null)
       pt.__ignore_compression = true
       pt.__cached = true
 
-      if(options && options.compression === 'brotli')
+      if(compression === 'brotli')
         res.brotli.setup()
-      else if(options && options.compression === 'gzip')
+      else if(compression === 'gzip')
         res.gzip.setup()
 
       return pt
