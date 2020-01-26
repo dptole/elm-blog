@@ -51,11 +51,16 @@
         return API_URL;
       }
 
+      function getInitialMs() {
+        return Date.now();
+      }
+
       Elm.Main.init({
         node: elm,
         flags: JSON.stringify({
           url: getUrl(),
-          api: getApi()
+          api: getApi(),
+          initial_ms: getInitialMs()
         })
       })
     }()

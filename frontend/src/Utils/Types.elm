@@ -337,6 +337,7 @@ type alias HttpMeta =
 type alias MainModelFlags =
   { url : MainModelFlagsUrl
   , api : String
+  , initial_ms : Int
   }
 
 

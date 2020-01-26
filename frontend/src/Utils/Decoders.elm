@@ -502,6 +502,7 @@ mainModelFlags =
   Json.Decode.succeed Utils.Types.MainModelFlags
     |> Json.Decode.Pipeline.required "url" mainModelFlagsUrl
     |> Json.Decode.Pipeline.required "api" Json.Decode.string
+    |> Json.Decode.Pipeline.required "initial_ms" Json.Decode.int
 
 
 mainModelFlagsUrl : Json.Decode.Decoder Utils.Types.MainModelFlagsUrl

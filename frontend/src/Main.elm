@@ -160,6 +160,11 @@ init js_flags nav_url nav_key =
         ( initElementsModel flags nav_url nav_key ) -- comp
         ( initMainModel flags nav_url nav_key )     -- main
 
+    model2 =
+      updateModelCompPostDateTime
+        ( Utils.Funcs.posixToIso8601 model.main.zone model.main.time )
+        model
+
     cmds =
       [ Cmd.map SignInMsg <| Elements.SignIn.checkIfAlreadySignedIn flags
       , Cmd.map PostShowPublicMsg <| Elements.PostShowPublic.getPublishedPosts flags.api
@@ -193,7 +198,7 @@ init js_flags nav_url nav_key =
           cmds
 
   in
-    ( model
+    ( model2
     , Cmd.batch cmds2
     )
 
@@ -220,7 +225,7 @@ initMainModel flags nav_url nav_key =
     ( MainNavModel nav_url nav_key )                              -- nav
     flags                                                         -- flags
     ( Utils.Work.addWork loadingPublishedPosts checkingLoggedIn ) -- work
-    ( Time.millisToPosix 0 )                                      -- posix
+    ( Time.millisToPosix flags.initial_ms )                       -- time
     ( Time.customZone 0 [] )                                      -- zone
     Utils.Types.NoSpecial                                         -- special_msg
 
@@ -230,6 +235,7 @@ initFlags =
   Utils.Types.MainModelFlags
     initFlagsUrl                      -- url
     "http://localhost:9090/elm-blog"  -- api
+    0                                 -- initial_ms
 
 
 initFlagsUrl : Utils.Types.MainModelFlagsUrl

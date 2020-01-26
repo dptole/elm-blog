@@ -52,13 +52,17 @@ html,body{overflow: hidden;}
 }
 
 html {
-  background-color: var(--header-background-color);
+  background-color: var(--body-background-color);
 }
 
 body {
   padding: 0;
   margin: 0;
   /*animation: imgshow 2s;*/
+  flex-direction: column;
+  display: flex;
+  height: 100vh;
+  overflow: hidden;
 }
 
 hr {
@@ -140,6 +144,12 @@ a {
 
 a:visited {
   color: var(--visited-link-color);
+}
+
+div.footer {
+  position: fixed;
+  bottom: 0;
+  width: 100%;
 }
 
 div.header,
@@ -236,6 +246,10 @@ div.header > ul.right-ul > li > ul {
   box-shadow: 2px 2px 10px black;
   z-index: 100;
   right: 5px;
+}
+
+div.body-html {
+  overflow: auto;
 }
 
 div.body-html,
