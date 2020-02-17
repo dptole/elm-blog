@@ -2493,6 +2493,9 @@ crashArea =
     , Html.Attributes.style "white-space" "pre-wrap"
     , Html.Attributes.style "font-family" "courier"
     , Html.Attributes.style "font-size" "18px"
+    , Html.Attributes.style "position" "absolute"
+    , Html.Attributes.style "height" "100%"
+    , Html.Attributes.style "overflow" "auto"
     ]
     []
 

@@ -205,7 +205,7 @@ util._extend(routes, {
         )
       ),
 
-    '/elm-blog/post/:post_id': async (req, res) =>
+    '/elm-blog/single-post/:post_id': async (req, res) =>
       // @model published_post
       res.json(
         await db.posts.getAsPublished(req.__params.post_id)

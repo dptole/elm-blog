@@ -681,8 +681,9 @@ util._extend(helper, {
       label:for(const path in method_routes) {
         req.__params = {}
         const route_url = path.split('/')
+        let i = 0
 
-        for(let i = 0; i < request_url.length; i++) {
+        for(; i < request_url.length; i++) {
           if(!(
             route_url[i] !== 0[0] &&
             request_url[i] !== 0[0]
@@ -703,7 +704,9 @@ util._extend(helper, {
             continue label
         }
 
-        if(helper.is.func(method_routes[path])) {
+        const matched_route = route_url.length === request_url.length || route_url[i][0] === '*'
+
+        if(matched_route && helper.is.func(method_routes[path])) {
           const route = method_routes[path].bind()
           route.path = path
           return route

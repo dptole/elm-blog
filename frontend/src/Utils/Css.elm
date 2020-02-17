@@ -719,11 +719,19 @@ div.comment-replies-container > div > fieldset.comment-reply-recursive > legend 
   margin: 20px 0;
 }
 
-@media (max-width: 768px) {
+@media (orientation: portrait) and (min-width: 500px) and (max-width: 768px) {
   * {
-    font-size: 24px;
+    font-size: 20px;
   }
+}
 
+@media (min-width: 769px) {
+  * {
+    font-size: 22px;
+  }
+}
+
+@media (max-width: 768px) {
   .webgl-profile-avatar-container {
     flex-direction: column-reverse;
   }
@@ -740,7 +748,7 @@ div.comment-replies-container > div > fieldset.comment-reply-recursive > legend 
 
 @media (max-width: 399px) {
   html:after {
-    content: "The device must be at least 400px wide";
+    content: "The device must be at least 400px wide.";
     font-size: 24px;
     display: flex;
     align-items: center;

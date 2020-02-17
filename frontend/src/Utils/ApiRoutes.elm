@@ -106,7 +106,7 @@ getPublishedPost : String -> String -> RequestOptions
 getPublishedPost root_path post_id  =
   route root_path
     "GET"
-    ( "/post/" ++ post_id )
+    ( "/single-post/" ++ post_id )
     defaultTimeout
     defaultTracker
     defaultHeaders
