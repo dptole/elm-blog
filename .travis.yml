@@ -1,10 +1,10 @@
 language: node_js
 
 node_js:
-  - "13.8"
+  - "12.14.1"
 
 install:
-  - npm i -g --unsafe elm@0.19.1 elm-test@0.19.1-revision2
+  - npm i -g --unsafe-perm elm@0.19.1 elm-test@0.19.1-revision2
 
 script:
   - cd frontend && elm-test
