@@ -1,10 +1,13 @@
 language: node_js
 
 node_js:
-  - "12.14.1"
+  - "13.8"
 
 install:
-  - npm i -g --unsafe-perm elm@0.19.1 elm-test@0.19.1-revision2
+  - curl -L --compressed https://github.com/elm/compiler/releases/download/0.19.1/binary-for-linux-64-bit.gz -o elm
+  - chmod +x elm
+  - mv elm /usr/local/bin/elm
+  - npm i -g --unsafe elm-test@0.19.1-revision2
 
 script:
   - cd frontend && elm-test
