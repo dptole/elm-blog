@@ -1,0 +1,10 @@
+language: node_js
+
+node_js:
+  - "13.8"
+
+install:
+  - npm i -g elm@0.19.1 elm-test@0.19.1-revision2
+
+script:
+  - cd frontend && elm-test
