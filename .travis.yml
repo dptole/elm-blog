@@ -4,9 +4,9 @@ node_js:
   - "13.8"
 
 install:
-  - curl -L --compressed https://github.com/elm/compiler/releases/download/0.19.1/binary-for-linux-64-bit.gz -o elm
+  - wget -qO- https://github.com/elm/compiler/releases/download/0.19.1/binary-for-linux-64-bit.gz | gunzip > elm
   - chmod +x elm
-  - mv elm /usr/local/bin/elm
+  - export PATH=$PATH:$(pwd)
   - npm i -g --unsafe elm-test@0.19.1-revision2
 
 script:
