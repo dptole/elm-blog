@@ -68,7 +68,7 @@ suite =
           expectations =
             List.map
               (\year -> Expect.equal <| Utils.Funcs.isLeapYear year )
-              [1900]-- incorrectLeapYears
+              incorrectLeapYears
 
         in
           Expect.all expectations False
