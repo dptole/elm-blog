@@ -236,7 +236,7 @@ millisToDateTime millis =
       ( Time.toSecond utc p )
       ( Time.toMillis utc p )
       year1970
-      ( countLeapYearsInYearRange year1970 year )
+      ( countLeapYearsInYearRange initYear year )
 
 
 posixMonthToInt : Time.Zone -> Time.Posix -> Int
@@ -292,7 +292,7 @@ iso8601ToMillis date_time =
     List.sum
       [ yearToMillis dt.year1970
       , monthToMillis dt.month
-      , dayToMillis dt.day
+      , ( dayToMillis dt.day ) - ( dayToMillis 1 )
       , hourToMillis dt.hour
       , minuteToMillis dt.minute
       , secondToMillis dt.second
@@ -380,7 +380,7 @@ iso8601ToDateTime date_time =
         second
         millisecond
         year1970
-        ( countLeapYearsInYearRange year1970 year )
+        ( countLeapYearsInYearRange initYear year )
 
 
 yearToMillis : Int -> Int
@@ -498,11 +498,12 @@ isValidMillisecond millisecond =
 
 isValidDayOfMonthOfYear : Int -> Int -> Int -> Bool
 isValidDayOfMonthOfYear day month year =
-  day > 0 && day < 32 &&
-  ( day == 31 && List.member month [1, 3, 5, 7, 8, 10, 12] ) ||
-  ( month == 2 && day < 29 ) ||
-  ( month == 2 && day == 29 && isLeapYear year ) ||
-  ( isValidMonth month && isValidYear year )
+  day > 0 && day < 32 && isValidYear year && isValidMonth month &&
+  ( ( day == 31 && List.member month [1, 3, 5, 7, 8, 10, 12] ) ||
+    ( day == 30 && List.member month [4, 6, 9, 11] ) ||
+    ( day == 29 && isLeapYear year ) ||
+    ( day < 29 )
+  )
 
 
 countLeapYearsInYearRange : Int -> Int -> Int
