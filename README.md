@@ -1,5 +1,7 @@
 # Elm blog
 
+[![Build Status][travis-badge-dev]][travis-build]
+
 A mini blog made using only [Elm 0.19.1][elm_0_19_1]!
 
 Check out the demo at [dptole.ngrok.io/elm-blog/][demo].
@@ -64,3 +66,5 @@ If you want to know more info about the `install-container.sh` process go to the
 [docker_wiki]: https://github.com/dptole/elm-blog/wiki/Building-with-docker
 [building_manually_wiki]: https://github.com/dptole/elm-blog/wiki/Building-manually
 [license]: LICENSE
+[travis-build]: https://travis-ci.org/dptole/elm-blog
+[travis-badge-dev]: https://travis-ci.org/dptole/elm-blog.svg?branch=dev
