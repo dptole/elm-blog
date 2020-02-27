@@ -49,6 +49,11 @@ bash elm-blog/docker/install-container.sh
 
 If you want to know more info about the `install-container.sh` process go to the [docker wiki][docker_wiki].
 
+# Community
+
+- [Code of conduct](CODE_OF_CONDUCT.md)
+- [Contributing](CONTRIBUTING.md)
+
 # License
 
 [MIT][license].
