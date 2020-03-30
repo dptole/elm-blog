@@ -112,7 +112,91 @@ suite =
         in
           Expect.all expectations False
 
+    ---------------------------------------------------------------------------
+
+    -- The following error, that occurred during tests:
+    --
+    --   This test failed because it threw an exception: "RangeError: Maximum call stack size exceeded"
+    --
+    -- Was solved by separating the validations in ranges.
+    --
+    , Test.test "should validate all days from 1970-01-01T00:00:00.000 up until 1979-08-02T00:00:00.000" <|
+      \_ ->
+        Expect.all (validateMsRange 0 302400000000) True
+
+    ---------------------------------------------------------------------------
+
+    , Test.test "should validate all days from 1979-08-02T00:00:00.000 up until 1989-03-02T00:00:00.000" <|
+      \_ ->
+        Expect.all (validateMsRange 302400000000 604800000000) True
+
+    ---------------------------------------------------------------------------
+
+    , Test.test "should validate all days from 1989-03-02T00:00:00.000 up until 1998-10-01T00:00:00.000" <|
+      \_ ->
+        Expect.all (validateMsRange 604800000000 907200000000) True
+
+    ---------------------------------------------------------------------------
+
+    , Test.test "should validate all days from 1998-10-01T00:00:00.000 up until 2008-05-01T00:00:00.000" <|
+      \_ ->
+        Expect.all (validateMsRange 907200000000 1209600000000) True
+
+    ---------------------------------------------------------------------------
+
+    , Test.test "should validate all days from 1979-08-02T00:00:00.000 up until 2017-11-30T00:00:00.000" <|
+      \_ ->
+        Expect.all (validateMsRange 1209600000000 1512000000000) True
+
+    ---------------------------------------------------------------------------
+
+    , Test.test "should validate all days from 2017-11-30T00:00:00.000 up until 2027-07-01T00:00:00.000" <|
+      \_ ->
+        Expect.all (validateMsRange 1512000000000 1814400000000) True
+
+    ---------------------------------------------------------------------------
+
+    , Test.test "should validate all days from 2027-07-01T00:00:00.000 up until 2037-01-29T00:00:00.000" <|
+      \_ ->
+        Expect.all (validateMsRange 1814400000000 2116800000000) True
+
+    ---------------------------------------------------------------------------
+
+    , Test.test "should validate all days from 2037-01-29T00:00:00.000 up until 2038-01-20T00:00:00.000" <|
+      \_ ->
+        Expect.all (validateMsRange 2116800000000 2147558400000) True
+
     ]
+
+
+validateMsRange : Int -> Int -> List (Bool -> Expect.Expectation)
+validateMsRange from_ms until_ms =
+  let
+    one_day_in_ms = 86400 * 1000
+
+    iter : Time.Posix -> Int -> List ( Bool -> Expect.Expectation )
+    iter curr_posix end_ms =
+      if Time.posixToMillis curr_posix > end_ms then
+        []
+
+      else
+        let
+          year = Time.toYear Time.utc curr_posix
+          month = Time.toMonth Time.utc curr_posix |> monthToNumber
+          day = Time.toDay Time.utc curr_posix
+          is_valid = Utils.Funcs.isValidDayOfMonthOfYear day month year
+
+          next_posix =
+            Time.millisToPosix (
+              ( Time.posixToMillis curr_posix ) +
+              one_day_in_ms
+            )
+
+        in
+          ( Expect.equal is_valid ) :: iter next_posix end_ms
+
+  in
+    iter (Time.millisToPosix from_ms) until_ms
 
 
 correctLastDayOfTheMonth : List ( Int, Int, Int )
@@ -166,3 +250,21 @@ correctLeapYears =
     2344, 2348, 2352, 2356, 2360, 2364, 2368, 2372, 2376, 2380,
     2384, 2388, 2392, 2396, 2400, 2404, 2408, 2412, 2416, 2420
   ]
+
+
+monthToNumber : Time.Month -> Int
+monthToNumber month =
+  case month of
+    Time.Jan -> 1
+    Time.Feb -> 2
+    Time.Mar -> 3
+    Time.Apr -> 4
+    Time.May -> 5
+    Time.Jun -> 6
+    Time.Jul -> 7
+    Time.Aug -> 8
+    Time.Sep -> 9
+    Time.Oct -> 10
+    Time.Nov -> 11
+    Time.Dec -> 12
+

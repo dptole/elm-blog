@@ -498,10 +498,10 @@ isValidMillisecond millisecond =
 
 isValidDayOfMonthOfYear : Int -> Int -> Int -> Bool
 isValidDayOfMonthOfYear day month year =
-  day > 0 && day < 32 && isValidYear year && isValidMonth month &&
-  ( ( day == 31 && List.member month [1, 3, 5, 7, 8, 10, 12] ) ||
-    ( day == 30 && List.member month [4, 6, 9, 11] ) ||
-    ( day == 29 && isLeapYear year ) ||
+  day > 0 && isValidYear year && isValidMonth month &&
+  ( ( day < 32 && List.member month [1, 3, 5, 7, 8, 10, 12] ) ||
+    ( day < 31 && List.member month [4, 6, 9, 11] ) ||
+    ( day < 30 && isLeapYear year ) ||
     ( day < 29 )
   )
 
