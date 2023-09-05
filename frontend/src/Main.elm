@@ -297,7 +297,7 @@ update msg model =
                   ( addWork fetchingPublishedPost model2
                   , Cmd.map
                       PostShowPublicMsg
-                      ( Elements.PostShowPublic.getPublishedPost model.main.flags.api post_id )
+                      ( Elements.PostShowPublic.getPublishedPost model2.main.flags.api post_id )
                   )
 
                 Nothing ->
@@ -324,7 +324,7 @@ update msg model =
                 ( comment_reply_model, comment_reply_cmd ) =
                   Elements.CommentReply.update
                     Elements.CommentReply.FetchReplies
-                    model.comp.comment_reply
+                    model2.comp.comment_reply
 
               in
                 ( updateModelCompCommentReply comment_reply_model model2
@@ -340,11 +340,10 @@ update msg model =
                 ( model2, Cmd.none )
               else
                 ( addWork loadingPublishedPosts model2
-                    |> updateModelCompPostShowPublic
-                        ( Elements.PostShowPublic.initModel model.main.flags )
+
                 , Cmd.map
                     PostShowPublicMsg
-                    ( Elements.PostShowPublic.getPublishedPosts model.main.flags.api )
+                    ( Elements.PostShowPublic.getPublishedPosts model2.main.flags.api )
                 )
 
             Just ( Utils.Types.DashboardProfile, _ ) ->
@@ -365,7 +364,7 @@ update msg model =
                 ( model2, Cmd.none )
               else
                 ( updateModelCompPostCreate
-                    ( Elements.PostCreate.initModel model.main.flags )
+                    ( Elements.PostCreate.initModel model2.main.flags )
                     model2
                 , Cmd.none
                 )
@@ -378,7 +377,7 @@ update msg model =
                       Elements.PostCreate.update
                         ( Elements.PostCreate.FetchPost post_id )
                         ( Elements.PostCreate.initModelFetchingPostById
-                            model.main.flags
+                            model2.main.flags
                             post_id
                         )
 
@@ -2162,6 +2161,16 @@ updateModelCompPostShowPublic new_psp model =
     { model | comp = new_comp }
 
 
+updateModelCompPostShowPublicIsLoggedIn : Bool -> Model -> Model
+updateModelCompPostShowPublicIsLoggedIn is_logged_in model =
+  updateModelCompPostShowPublic
+    ( Elements.PostShowPublic.updateModelIsLoggedIn
+        is_logged_in
+        model.comp.post_show_public
+    )
+    model
+
+
 updateModelCompProfile : Elements.Profile.Model -> Model -> Model
 updateModelCompProfile new_profile model =
   let
@@ -2244,16 +2253,6 @@ updateModelCompPostDateTime date_time model =
       |> updateModelCompPostShowPublic new_post_show_public
       |> updateModelCompPostDashboard new_post_dashboard
       |> updateModelCompTags new_tags
-
-
-updateModelCompPostShowPublicIsLoggedIn : Bool -> Model -> Model
-updateModelCompPostShowPublicIsLoggedIn is_logged_in model =
-  updateModelCompPostShowPublic
-    ( Elements.PostShowPublic.updateModelIsLoggedIn
-        is_logged_in
-        model.comp.post_show_public
-    )
-    model
 
 
 updateModelCompSignInAuth : Maybe Utils.Types.Auth -> Model -> Model
